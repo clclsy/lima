@@ -4,122 +4,122 @@ import java.awt.*;
 import java.util.List;
 import javax.swing.*;
 import nutrisci.gui.*;
+import nutrisci.template.Styles;
 
 public class MainMenu extends JPanel {
-    
-    public MainMenu(JFrame frame) {
-        setLayout(new BorderLayout());
+    private final JFrame frame;
 
-        // === HEADER with Logo + Title ===
+    public MainMenu(JFrame frame) {
+        this.frame=frame;
+        setLayout(new BorderLayout());
+        add(top_panel(), BorderLayout.NORTH);
+        add(middle_panel(), BorderLayout.CENTER);
+        add(bottom_panel(), BorderLayout.SOUTH);
+    }
+
+    private JPanel top_panel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(245, 231, 216));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        // Logo (smaller)
+
         ImageIcon image = new ImageIcon("src/image.png");
-        int original_width = image.getIconWidth();
-        int original_height = image.getIconHeight();
         int max_dim = 100;
-        int scaled_width, scaled_height;
-        if (original_width > original_height) {
-            scaled_width = max_dim;
-            scaled_height = (original_height * max_dim) / original_width;
-        } else {
-            scaled_height = max_dim;
-            scaled_width = (original_width * max_dim) / original_height;
-        }
-        Image scaled_image = image.getImage().getScaledInstance(scaled_width, scaled_height, Image.SCALE_SMOOTH);
-        JLabel logoLabel = new JLabel(new ImageIcon(scaled_image));
+        int w = image.getIconWidth(), h = image.getIconHeight();
+        int sw = (w > h) ? max_dim : (w * max_dim) / h;
+        int sh = (h > w) ? max_dim : (h * max_dim) / w;
+        Image scaled = image.getImage().getScaledInstance(sw, sh, Image.SCALE_SMOOTH);
 
-        // Title Text
-        JLabel titleLine = new JLabel("NutriSci");
-        titleLine.setFont(new Font("Georgia", Font.BOLD, 28)); // or any installed font
-        titleLine.setForeground(new Color(0x564C4D));
+        JLabel logo = new JLabel(new ImageIcon(scaled));
+        JLabel title = new JLabel("NutriSci");
+        title.setFont(new Font("Georgia", Font.BOLD, 30));
+        title.setForeground(new Color(0x564C4D));
 
-        JLabel subtitleLine = new JLabel("SwEATch to better!");
-        subtitleLine.setFont(new Font("Georgia", Font.PLAIN, 18));
-        subtitleLine.setForeground(new Color(0x564C4D));
+        JLabel subtitle = new JLabel("SwEATch to better!");
+        subtitle.setFont(new Font("Georgia", Font.PLAIN, 22));
+        subtitle.setForeground(new Color(0x564C4D));
+
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
-        titlePanel.setOpaque(false); // keep header background
-        titlePanel.add(titleLine);
-        titlePanel.add(subtitleLine);
-        // Wrap both logo and text
-        JPanel logoTitlePanel = new JPanel();
-        logoTitlePanel.setBackground(new Color(245, 231, 216));
-        logoTitlePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        logoTitlePanel.add(logoLabel);
-        logoTitlePanel.add(titlePanel);
+        titlePanel.setOpaque(false);
+        titlePanel.add(title);
+        titlePanel.add(subtitle);
 
-        headerPanel.add(logoTitlePanel, BorderLayout.WEST);
+        JPanel logoTitle = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        logoTitle.setBackground(new Color(245, 231, 216));
+        logoTitle.add(logo);
+        logoTitle.add(titlePanel);
 
-        add(headerPanel, BorderLayout.NORTH);
+        headerPanel.add(logoTitle, BorderLayout.WEST);
+        return headerPanel;
+    }
 
-        // === PROFILE GRID ===
-        // Main center layout wrapper
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(new Color(255, 251, 245)); // match bg
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    private JPanel middle_panel() {
+        JPanel center = new JPanel();
+        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+        center.setBackground(new Color(255, 251, 245));
+        center.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Label above buttons
-        JLabel selectLabel = new JLabel("Select a Profile:");
-        selectLabel.setFont(new Font("Helvetica", Font.PLAIN, 18));
-        selectLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        selectLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        centerPanel.add(selectLabel);
+        JLabel label = new JLabel("Select a Profile:");
+        label.setFont(Styles.title_font.deriveFont(Font.PLAIN));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        center.add(label);
 
-        JPanel profileGrid = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
-        profileGrid.setBackground(new Color(255, 251, 245));
-        UserProfile.seedTestProfilesIfEmpty(); // Seed first //just for testing
+        JPanel grid = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        grid.setBackground(new Color(255, 251, 245));
+
+        UserProfile.seedTestProfilesIfEmpty();
         List<UserProfile> profiles = UserProfile.getProfiles();
-        if (profiles.isEmpty()) {
-            JLabel err = new JLabel("No profiles found. Please create one.");
-            err.setFont(new Font("Helvetica", Font.PLAIN, 14));
-            profileGrid.add(err);
-        } else {
-            for (UserProfile profile : profiles) {
-                JButton profileBtn = new JButton(profile.getName());
-                profileBtn.setPreferredSize(new Dimension(90, 90));
-                profileBtn.setFont(new Font("Helvetica", Font.PLAIN, 15));
-                profileBtn.setBackground(new Color(255, 150, 120));
-                profileBtn.setFocusPainted(false);
-                profileBtn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
 
-                profileBtn.addActionListener(e -> {
-                    frame.setContentPane(new UserDashboardPanel(frame, profile));
+        if (profiles.isEmpty()) {
+            JLabel msg = new JLabel("No profiles found. Please create one.");
+            msg.setFont(Styles.small_font);
+            grid.add(msg);
+        } else {
+            for (UserProfile p : profiles) {
+                JButton btn = new JButton(p.getName());
+                btn.setPreferredSize(new Dimension(90, 90));
+                btn.setFont(Styles.default_font);
+                btn.setBackground(new Color(255, 150, 120));
+                btn.setFocusPainted(false);
+                btn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
+                btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                btn.addActionListener(e -> {
+                    frame.setContentPane(new UserDashboardPanel(frame, p));
                     frame.revalidate();
                     frame.repaint();
                 });
 
-                profileGrid.add(profileBtn);
+                grid.add(btn);
             }
-
         }
 
-        centerPanel.add(profileGrid);
-        add(centerPanel, BorderLayout.CENTER);
+        center.add(grid);
+        return center;
+    }
 
-        // === CREATE NEW PROFILE BUTTON ===
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(new Color(255, 251, 245));
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+    private JPanel bottom_panel() {
+        JPanel bottom = new JPanel();
+        bottom.setBackground(new Color(255, 251, 245));
+        bottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        JButton createNewBtn = new JButton("+ Create New Profile");
-        createNewBtn.setFont(new Font("Helvetica", Font.PLAIN, 16));
-        createNewBtn.setBackground(new Color(255, 114, 76));
-        createNewBtn.setForeground(Color.BLACK);
-        createNewBtn.setFocusPainted(false);
-        createNewBtn.setPreferredSize(new Dimension(200, 40));
-        createNewBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        JButton createBtn = new JButton("+ Create New Profile");
+        createBtn.setFont(Styles.default_font.deriveFont(Font.BOLD));
+        createBtn.setBackground(new Color(255, 114, 76));
+        createBtn.setForeground(Color.BLACK);
+        createBtn.setFocusPainted(false);
+        createBtn.setPreferredSize(new Dimension(200, 40));
+        createBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        createNewBtn.addActionListener(e -> {
+        createBtn.addActionListener(e -> {
             frame.setContentPane(new CreateProfilePanel(frame));
             frame.revalidate();
             frame.repaint();
         });
 
-        bottomPanel.add(createNewBtn);
-        add(bottomPanel, BorderLayout.SOUTH);
+        bottom.add(createBtn);
+        return bottom;
     }
 
 }

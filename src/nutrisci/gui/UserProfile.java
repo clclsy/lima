@@ -1,15 +1,14 @@
 package nutrisci.gui;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserProfile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String name, dob;
     private String sex, height, weight, unit;
-    private List<Meal> meals = new ArrayList<>();
+    private final List<Meal> meals = new ArrayList<>();
 
     private static List<UserProfile> savedProfiles = new ArrayList<>();
     private static final String PROFILE_FILE = "profiles.dat";
@@ -24,12 +23,11 @@ public class UserProfile implements Serializable {
         this.unit = unit;
     }
 
-    // ======= INNER MEAL CLASS =======
     public static class Meal implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        private String date, type;
-        private List<String> ingredients;
+        private final String date, type;
+        private final List<String> ingredients;
 
         public Meal(String date, String type, List<String> ingredients) {
             this.date = date;
@@ -37,21 +35,47 @@ public class UserProfile implements Serializable {
             this.ingredients = ingredients;
         }
 
-        public String getDate() { return date; }
-        public String getType() { return type; }
-        public List<String> getIngredients() { return ingredients; }
+        public String getDate() {
+            return date;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public List<String> getIngredients() {
+            return ingredients;
+        }
     }
 
-    // ======= GETTERS =======
-    public String getName() { return name; }
-    public String getDob() { return dob; }
-    public String getSex() { return sex; }
-    public String getHeight() { return height; }
-    public String getWeight() { return weight; }
-    public String getUnit() { return unit; }
-    public List<Meal> getMeals() { return meals; }
+    public String getName() {
+        return name;
+    }
 
-    // ======= PROFILE OPERATIONS =======
+    public String getDob() {
+        return dob;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public List<Meal> getMeals() {
+        return meals;
+    }
+
     public void update(String newSex, String newHeight, String newWeight, String newUnit) {
         this.sex = newSex;
         this.height = newHeight;
@@ -93,6 +117,7 @@ public class UserProfile implements Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void loadProfilesFromFile() {
         File file = new File(PROFILE_FILE);
         if (file.exists()) {
@@ -103,4 +128,5 @@ public class UserProfile implements Serializable {
             }
         }
     }
+
 }
