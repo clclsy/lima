@@ -160,7 +160,6 @@ public class ProfileForm extends JPanel {
         });
     }
 
-    // === Public Getters ===
     public String getNameText() {
         return name.getText().trim();
     }
@@ -250,7 +249,7 @@ public class ProfileForm extends JPanel {
     public void setProfileData(UserProfile p) {
         name.setText(p.getName());
         dob.setText(p.getDob());
-        gender.setSelectedItem(p.getSex());
+        gender.setSelectedItem(p.getGender());
         unit.setSelectedItem(p.getUnit());
         height.setText(p.getHeight());
         weight.setText(p.getWeight());

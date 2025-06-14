@@ -3,11 +3,13 @@ package nutrisci.gui;
 import java.awt.*;
 import javax.swing.*;
 import nutrisci.MainMenu;
+import nutrisci.template.*;
 
-public class UserDashboardPanel extends JPanel {
+public class UserDashboardPanel extends Base {
     public UserDashboardPanel(JFrame frame, UserProfile profile) {
+        super(frame);
         setLayout(new BorderLayout());
-        setBackground(new Color(255, 251, 245));
+        setBackground(Styles.background);
 
         Image bin_image = new ImageIcon("src/recycle-bin.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image edit_image = new ImageIcon("src/edit.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -17,36 +19,25 @@ public class UserDashboardPanel extends JPanel {
         ImageIcon editIcon = new ImageIcon(edit_image);
         ImageIcon dishIcon = new ImageIcon(dish_image);
         
-        // === Top Bar with Back Button ===
+        //back button
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setOpaque(false);
-        JButton backBtn = new JButton("←");
-        backBtn.setFont(new Font("Helvetica", Font.BOLD, 24));
-        backBtn.setForeground(new Color(0x564C4D));
-        backBtn.setFocusPainted(false);
-        backBtn.setContentAreaFilled(false);
-        backBtn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        backBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        backBtn.addActionListener(e -> {
-            frame.setContentPane(new MainMenu(frame));
-            frame.revalidate();
-        });
-        topPanel.add(backBtn);
+        topPanel.add(createBackButton(new MainMenu(frame)));
         add(topPanel, BorderLayout.NORTH);
 
-        // === Greeting ===
+        //greeting
         JLabel greeting = new JLabel("Hello, " + profile.getName() + "!");
         greeting.setFont(new Font("Georgia", Font.BOLD, 28));
         greeting.setHorizontalAlignment(SwingConstants.CENTER);
         greeting.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
-        // === Center Panel ===
+        //add greeting in center
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBackground(new Color(255, 251, 245));
         centerPanel.add(greeting);
 
-        // === Button Grid ===
+        //add buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         buttonPanel.setBackground(new Color(255, 251, 245));
 
@@ -58,7 +49,7 @@ public class UserDashboardPanel extends JPanel {
         editBtn.setIcon(editIcon);
         deleteBtn.setIcon(binIcon);
 
-        // Actions
+        //button actions
         editBtn.addActionListener(e -> {
             frame.setContentPane(new EditProfilePanel(frame, profile));
             frame.revalidate();

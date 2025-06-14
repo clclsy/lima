@@ -16,12 +16,13 @@ public class CreateProfilePanel extends Base {
 
         ProfileForm form = new ProfileForm("Create New Profile");
 
-        JPanel back = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        back.setOpaque(false); // transparent background
-        back.add(createBackButton(new MainMenu(frame)));
-        add(back); // This goes before the form or container
+        //back button
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setOpaque(false);
+        topPanel.add(createBackButton(new MainMenu(frame)));
+        add(topPanel, BorderLayout.NORTH);
 
-        // Add the form itself (centered)
+        //add form
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Styles.background);
         container.add(form);

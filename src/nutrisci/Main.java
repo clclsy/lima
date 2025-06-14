@@ -7,7 +7,7 @@ import nutrisci.gui.UserProfile;
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-        UserProfile.loadProfilesFromFile();
+            UserProfile.loadProfilesFromFile();
             ImageIcon image = new ImageIcon("src/image.png"); //create an ImageIcon
             JFrame frame = new JFrame(); //creates frame
             frame.setTitle("NutriSci: SwEATch to better!"); //set title

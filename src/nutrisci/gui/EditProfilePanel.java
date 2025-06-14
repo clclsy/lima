@@ -2,12 +2,11 @@ package nutrisci.gui;
 
 import java.awt.*;
 import javax.swing.*;
-import nutrisci.MainMenu;
 import nutrisci.template.*;
 
 public class EditProfilePanel extends Base {
 
-    private final UserProfile profile;
+    private UserProfile profile;
 
     public EditProfilePanel(JFrame frame, UserProfile profile) {
         super(frame);
@@ -21,12 +20,13 @@ public class EditProfilePanel extends Base {
         form.setProfileData(profile);
         form.setEditable(true);
 
-        JPanel back = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        back.setOpaque(false);
-        back.add(createBackButton(new MainMenu(frame)));
-        add(back); // This goes before the form or container
+        //back button
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setOpaque(false);
+        topPanel.add(createBackButton(new UserDashboardPanel(frame, profile)));
+        add(topPanel, BorderLayout.NORTH);
 
-        // Add the form itself (centered)
+        //add form
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Styles.background);
         container.add(form);
@@ -53,5 +53,13 @@ public class EditProfilePanel extends Base {
             }
         });
 
+    }
+
+    public UserProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(UserProfile profile) {
+        this.profile = profile;
     }
 }

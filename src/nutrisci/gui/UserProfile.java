@@ -7,20 +7,21 @@ public class UserProfile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final String name, dob;
-    private String sex, height, weight, unit;
-    private final List<Meal> meals = new ArrayList<>();
+    private String gender, height, weight, unit;
+    private List<Meal> meals;
 
     private static List<UserProfile> savedProfiles = new ArrayList<>();
     private static final String PROFILE_FILE = "profiles.dat";
 
     // Constructor
-    public UserProfile(String name, String dob, String sex, String height, String weight, String unit) {
+    public UserProfile(String name, String dob, String gender, String height, String weight, String unit) {
         this.name = name;
         this.dob = dob;
-        this.sex = sex;
+        this.gender = gender;
         this.height = height;
         this.weight = weight;
         this.unit = unit;
+        this.meals = new ArrayList<>();
     }
 
     public static class Meal implements Serializable {
@@ -56,8 +57,8 @@ public class UserProfile implements Serializable {
         return dob;
     }
 
-    public String getSex() {
-        return sex;
+    public String getGender() {
+        return gender;
     }
 
     public String getHeight() {
@@ -73,21 +74,27 @@ public class UserProfile implements Serializable {
     }
 
     public List<Meal> getMeals() {
-        return meals;
+    if (meals == null) {
+        meals = new ArrayList<>();
     }
+    return meals;
+}
 
-    public void update(String newSex, String newHeight, String newWeight, String newUnit) {
-        this.sex = newSex;
+
+    public void update(String newGender, String newHeight, String newWeight, String newUnit) {
+        this.gender = newGender;
         this.height = newHeight;
         this.weight = newWeight;
         this.unit = newUnit;
     }
 
     public void addMeal(Meal meal) {
+        if (meals == null) {
+            meals = new ArrayList<>();
+        }
         meals.add(meal);
     }
 
-    // ======= PROFILE LIST MANAGEMENT =======
     public static void addProfile(UserProfile p) {
         savedProfiles.add(p);
     }
@@ -108,12 +115,16 @@ public class UserProfile implements Serializable {
         }
     }
 
-    // ======= FILE PERSISTENCE =======
     public static void saveProfilesToFile() {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(PROFILE_FILE))) {
             out.writeObject(savedProfiles);
+            System.out.println("✔ Profiles saved:");
+            for (UserProfile p : savedProfiles) {
+                System.out.println("- " + p.getName() + " has " + p.getMeals().size() + " meals");
+            }
         } catch (IOException e) {
-            System.err.println("❌ Error saving profiles: " + e.getMessage());
+            System.out.println("❌ Failed to save profiles:");
+            e.printStackTrace();
         }
     }
 
