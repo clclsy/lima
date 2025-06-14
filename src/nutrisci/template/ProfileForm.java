@@ -50,7 +50,7 @@ public class ProfileForm extends JPanel {
         add_row("Name:", name, gbc, row++);
         setupDOBField();
         add_row("Date of Birth:", dob, gbc, row++);
-        add_row("Sex:", gender, gbc, row++);
+        add_row("Gender:", gender, gbc, row++);
         add_row("Units:", unit, gbc, row++);
         setupUnitSwitcher();
         add_row_unit("Height:", height, height_unit, gbc, row++);
