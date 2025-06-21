@@ -12,7 +12,24 @@ public abstract class Base extends JPanel {
         setBackground(Styles.background);
     }
 
-    protected JButton createBackButton(JPanel destinationPanel) {
+    public JPanel createTopPanel(JPanel destination) {
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setOpaque(false);
+        topPanel.add(createBackButton(destination));
+        return topPanel;
+    }
+
+    public JPanel createCenterPanel(Component... components) {
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBackground(new Color(255, 251, 245));
+        for (Component comp : components) {
+            centerPanel.add(comp);
+        }
+        return centerPanel;
+    }
+
+    protected JButton createBackButton(JPanel destination) {
         JButton backButton = new JButton("←");
         backButton.setFont(new Font("Helvetica", Font.BOLD, 20)); // Adjust to match other icons
         backButton.setForeground(new Color(0x564C4D));
@@ -25,7 +42,7 @@ public abstract class Base extends JPanel {
         backButton.setMargin(new Insets(0, 0, 0, 0));
 
         backButton.addActionListener(e -> {
-            frame.setContentPane(destinationPanel);
+            frame.setContentPane(destination);
             frame.revalidate();
         });
 

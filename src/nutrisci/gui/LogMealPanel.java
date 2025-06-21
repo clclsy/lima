@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import nutrisci.MainMenu;
+import nutrisci.gui.UserProfile.Meal;
 import nutrisci.template.*;
 
 public class LogMealPanel extends Base {
@@ -110,7 +111,7 @@ public class LogMealPanel extends Base {
             return;
         }
 
-        UserProfile.Meal meal = new UserProfile.Meal(date_text, meal_type, ingredients);
+        Meal meal = new Meal(date_text, meal_type, ingredients);
         profile.addMeal(meal);
 
         System.out.println("✅ Meal added to profile: " + profile.getName());

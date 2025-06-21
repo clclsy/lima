@@ -9,108 +9,108 @@ import nutrisci.template.*;
 
 public class ViewMeals extends Base {
 
+    private final UserProfile profile;
+    private final JPanel mealPanel = new JPanel();
+    private final JLabel mealCount = new JLabel();
+    private final JComboBox<String> dateSelector = new JComboBox<>();
+    private List<UserMeals> allmeals;
+
     public ViewMeals(JFrame frame, UserProfile profile) {
         super(frame);
+        this.profile = profile;
+        this.allmeals = profile.getMeals();
+
         setLayout(new BorderLayout());
         setBackground(Styles.background);
 
+        add(createTopPanel(frame), BorderLayout.NORTH);
+        add(createMainPanel(), BorderLayout.CENTER);
+
+        updateMealList(); // initial load
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
+    }
+
+    private JPanel createTopPanel(JFrame frame) {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setOpaque(false);
         topPanel.add(createBackButton(new DietDashboardPanel(frame, profile)));
-        add(topPanel, BorderLayout.NORTH);
+        return topPanel;
+    }
 
+    private JPanel createMainPanel() {
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Styles.background);
 
-        // title
         JLabel title = new JLabel("Logged Meals for " + profile.getName(), JLabel.CENTER);
         title.setFont(Styles.title_font);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         contentPanel.add(title);
 
-        //filter by date
-        List<UserProfile.Meal> allmeals = profile.getMeals();
-        Set<String> dateexist = allmeals.stream().map(UserProfile.Meal::getDate).collect(Collectors.toSet());
-        JComboBox<String> date = new JComboBox<>();
-        date.addItem("Show All");
-        dateexist.stream().sorted().forEach(date::addItem);
-        date.setMaximumSize(new Dimension(200, 25));
-        date.setAlignmentX(Component.CENTER_ALIGNMENT);
-        contentPanel.add(date);
+        //date filter
+        createDateFilter();
+        contentPanel.add(dateSelector);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        //number of meals
-        JLabel no = new JLabel();
-        no.setFont(Styles.default_font);
-        no.setAlignmentX(Component.CENTER_ALIGNMENT);
-        contentPanel.add(no);
+        //count
+        mealCount.setFont(Styles.default_font);
+        mealCount.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPanel.add(mealCount);
 
-        // meals list
-        JPanel meal_panel = new JPanel();
-        meal_panel.setBackground(Styles.background);
-        meal_panel.setLayout(new BoxLayout(meal_panel, BoxLayout.Y_AXIS));
-        meal_panel.setOpaque(false);
-        meal_panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //meal panel
+        mealPanel.setBackground(Styles.background);
+        mealPanel.setLayout(new BoxLayout(mealPanel, BoxLayout.Y_AXIS));
+        mealPanel.setOpaque(false);
+        mealPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JScrollPane scroll_pane = new JScrollPane(meal_panel);
-        scroll_pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scroll_pane.setBorder(BorderFactory.createEmptyBorder());
-        scroll_pane.getViewport().setBackground(Styles.background);
-        contentPanel.add(scroll_pane);
+        JScrollPane scrollPane = new JScrollPane(mealPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(Styles.background);
+        contentPanel.add(scrollPane);
 
-        Runnable update_meallist = () -> {
-            String selectedDate = (String) date.getSelectedItem();
-            meal_panel.removeAll();
-            int count = 0;
-            for (UserProfile.Meal meal : allmeals) {
-                if (!"Show All".equals(selectedDate) && !meal.getDate().equals(selectedDate)) continue;
-
-                JPanel card = new JPanel();
-                card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-                card.setBackground(Color.WHITE);
-                card.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-                    BorderFactory.createEmptyBorder(12, 14, 12, 14)
-                ));
-                card.setMaximumSize(new Dimension(500, Integer.MAX_VALUE));
-                card.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                JLabel header = new JLabel(meal.getDate() + "    |    " + meal.getType());
-                header.setFont(Styles.default_font);
-                header.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-
-                JTextArea igdlist = new JTextArea("Ingredients:\n - " + String.join("\n - ", meal.getIngredients()));
-                igdlist.setFont(Styles.small_font);
-                igdlist.setEditable(false);
-                igdlist.setOpaque(false);
-                igdlist.setBorder(null);
-
-                card.add(header);
-                card.add(igdlist);
-                meal_panel.add(card);
-                meal_panel.add(Box.createRigidArea(new Dimension(0, 10)));
-                count++;
-            }
-            no.setText("Total Meals: " + count);
-            meal_panel.revalidate();
-            meal_panel.repaint();
-        };
-
-        //initial run
-        update_meallist.run();
-
-        //different day
-        date.addActionListener(e -> update_meallist.run());
-
-        add(contentPanel, BorderLayout.CENTER);
-
-        SwingUtilities.invokeLater(() -> {
-            revalidate();
-            repaint();
-        });
-
+        return contentPanel;
     }
 
+    private void createDateFilter() {
+        Set<String> uniqueDates = allmeals.stream()
+            .map(m -> m.getDate().toString())
+            .collect(Collectors.toSet());
+
+        dateSelector.addItem("Show All");
+        uniqueDates.stream().sorted().forEach(dateSelector::addItem);
+        dateSelector.setMaximumSize(new Dimension(200, 25));
+        dateSelector.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        dateSelector.addActionListener(e -> updateMealList());
+    }
+
+    private void updateMealList() {
+        String selectedDate = (String) dateSelector.getSelectedItem();
+        mealPanel.removeAll();
+        int count = 0;
+
+        for (UserMeals meal : allmeals) {
+            if (!"Show All".equals(selectedDate) && !meal.getDate().toString().equals(selectedDate)) continue;
+            mealPanel.add(new MealCard(meal));
+            mealPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            count++;
+        }
+
+        mealCount.setText("Total Meals: " + count);
+        mealPanel.revalidate();
+        mealPanel.repaint();
+    }
+
+    public List<UserMeals> getAllMeals() {
+        return allmeals;
+    }
+
+    public void setAllMeals(List<UserMeals> allMeals) {
+        this.allmeals = allMeals;
+    }
 }

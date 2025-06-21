@@ -4,12 +4,12 @@ import java.io.*;
 import java.util.*;
 
 public class UserProfile implements Serializable {
+    
     private static final long serialVersionUID = 1L;
 
     private final String name, dob;
     private String gender, height, weight, unit;
-    private List<Meal> meals;
-
+    private List<UserMeals> meals;
     private static List<UserProfile> savedProfiles = new ArrayList<>();
     private static final String PROFILE_FILE = "profiles.dat";
 
@@ -22,31 +22,6 @@ public class UserProfile implements Serializable {
         this.weight = weight;
         this.unit = unit;
         this.meals = new ArrayList<>();
-    }
-
-    public static class Meal implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        private final String date, type;
-        private final List<String> ingredients;
-
-        public Meal(String date, String type, List<String> ingredients) {
-            this.date = date;
-            this.type = type;
-            this.ingredients = ingredients;
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public List<String> getIngredients() {
-            return ingredients;
-        }
     }
 
     public String getName() {
@@ -73,26 +48,11 @@ public class UserProfile implements Serializable {
         return unit;
     }
 
-    public List<Meal> getMeals() {
-    if (meals == null) {
-        meals = new ArrayList<>();
-    }
-    return meals;
-}
-
-
     public void update(String newGender, String newHeight, String newWeight, String newUnit) {
         this.gender = newGender;
         this.height = newHeight;
         this.weight = newWeight;
         this.unit = newUnit;
-    }
-
-    public void addMeal(Meal meal) {
-        if (meals == null) {
-            meals = new ArrayList<>();
-        }
-        meals.add(meal);
     }
 
     public static void addProfile(UserProfile p) {
@@ -115,6 +75,7 @@ public class UserProfile implements Serializable {
         }
     }
 
+    @SuppressWarnings("CallToPrintStackTrace")
     public static void saveProfilesToFile() {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(PROFILE_FILE))) {
             out.writeObject(savedProfiles);
@@ -138,6 +99,21 @@ public class UserProfile implements Serializable {
                 System.err.println("❌ Error loading profiles: " + e.getMessage());
             }
         }
+    }
+    
+
+    public List<UserMeals> getMeals() {
+        if (meals == null) {
+            meals = new ArrayList<>();
+        }
+        return meals;
+    }
+
+    public void addMeal(UserMeals meal) {
+        if (meals == null) {
+            meals = new ArrayList<>();
+        }
+        meals.add(meal);
     }
 
 }

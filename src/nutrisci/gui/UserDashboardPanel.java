@@ -8,6 +8,10 @@ import nutrisci.template.*;
 public class UserDashboardPanel extends Base {
     public UserDashboardPanel(JFrame frame, UserProfile profile) {
         super(frame);
+        init(frame, profile);
+    }
+
+    private void init(JFrame frame, UserProfile profile){
         setLayout(new BorderLayout());
         setBackground(Styles.background);
 
@@ -20,22 +24,13 @@ public class UserDashboardPanel extends Base {
         ImageIcon dishIcon = new ImageIcon(dish_image);
         
         //back button
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        topPanel.setOpaque(false);
-        topPanel.add(createBackButton(new MainMenu(frame)));
-        add(topPanel, BorderLayout.NORTH);
+        add(createTopPanel(new MainMenu(frame)), BorderLayout.NORTH);
 
         //greeting
         JLabel greeting = new JLabel("Hello, " + profile.getName() + "!");
         greeting.setFont(new Font("Georgia", Font.BOLD, 28));
         greeting.setHorizontalAlignment(SwingConstants.CENTER);
         greeting.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
-
-        //add greeting in center
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(new Color(255, 251, 245));
-        centerPanel.add(greeting);
 
         //add buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
@@ -79,9 +74,9 @@ public class UserDashboardPanel extends Base {
         buttonPanel.add(editBtn);
         buttonPanel.add(dietBtn);
         buttonPanel.add(deleteBtn);
+        
+        add(createCenterPanel(greeting, buttonPanel), BorderLayout.CENTER);
 
-        centerPanel.add(buttonPanel);
-        add(centerPanel, BorderLayout.CENTER);
     }
 
     private JButton createSquareButton(String text, ImageIcon icon, Color bg) {
