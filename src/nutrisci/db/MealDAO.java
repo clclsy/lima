@@ -1,8 +1,8 @@
 package nutrisci.db;
 
-import nutrisci.Meal;
 import java.time.LocalDate;
 import java.util.*;
+import nutrisci.model.Meal;
 
 public class MealDAO {
     private static MealDAO instance;

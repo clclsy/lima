@@ -1,8 +1,9 @@
 package nutrisci.db;
 
-import nutrisci.UserProfile;
 import java.util.HashMap;
 import java.util.Map;
+
+import nutrisci.model.UserProfile;
 
 public class UserDAO {
     private static UserDAO instance;
