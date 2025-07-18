@@ -68,7 +68,15 @@ public class UserSelectPanel extends JPanel {
         grid.setBackground(Styles.background);
 
         List<UserProfile> profiles = UserProfileDAO.getAllProfiles();
-        
+        //for tests
+        System.out.println("Profiles in DB: " + profiles.size());
+        for (UserProfile p : profiles) {
+            System.out.println("- " + p.getName());
+        }
+
+        /**
+        if user_profiles table empty, display msg. if not empty, display all profiles
+        */
         if (profiles.isEmpty()) {
             JLabel msg = new JLabel("No profiles found. Please create one.");
             msg.setFont(Styles.small_font);
@@ -102,20 +110,20 @@ public class UserSelectPanel extends JPanel {
         bottom.setBackground(new Color(255, 251, 245));
         bottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        JButton createBtn = new JButton("+ Create New Profile");
-        createBtn.setFont(Styles.bdefault_font);
-        createBtn.setBackground(Styles.darkorange);
-        createBtn.setFocusPainted(false);
-        createBtn.setPreferredSize(new Dimension(200, 40));
-        createBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        JButton createbtn = new JButton("+ Create New Profile");
+        createbtn.setFont(Styles.bdefault_font);
+        createbtn.setBackground(Styles.darkorange);
+        createbtn.setFocusPainted(false);
+        createbtn.setPreferredSize(new Dimension(200, 40));
+        createbtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        createBtn.addActionListener(e -> {
+        createbtn.addActionListener(e -> {
             frame.setContentPane(new CreateProfilePanel(frame));
             frame.revalidate();
             frame.repaint();
         });
 
-        bottom.add(createBtn);
+        bottom.add(createbtn);
         return bottom;
     }
 }
