@@ -2,44 +2,22 @@ package nutrisci;
 
 import java.awt.*;
 import javax.swing.*;
-import nutrisci.view.*;
+import nutrisci.view.UserSelectPanel;
 
 public class MainApp {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("NutriSci - Main Menu");
+            ImageIcon image = new ImageIcon("src/image.png");
+            JFrame frame = new JFrame();
+            frame.setTitle("NutriSci: SwEATch to better!");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(700, 500);
+            frame.setSize(900, 800);
+            frame.setIconImage(image.getImage());
+            frame.getContentPane().setBackground(new Color(255, 251, 245));
+            frame.setLayout(new BorderLayout());
             frame.setLocationRelativeTo(null);
-
-            showMainMenu(frame);
-
+            frame.setContentPane(new UserSelectPanel(frame));
             frame.setVisible(true);
         });
-    }
-
-    public static void showMainMenu(JFrame frame) {
-        JPanel mainMenu = new JPanel(new GridLayout(3, 1));
-        JButton profileBtn = new JButton("Create Profile");
-        JButton logMealBtn = new JButton("Log Meal");
-        JButton swapBtn = new JButton("Request Food Swap");
-
-        profileBtn.addActionListener(e -> switchPanel(frame, new CreateProfilePanel(frame)));
-        logMealBtn.addActionListener(e -> switchPanel(frame, new LogMealPanel(frame)));
-        swapBtn.addActionListener(e -> switchPanel(frame, new FoodSwapPanel(frame)));
-
-        mainMenu.add(profileBtn);
-        mainMenu.add(logMealBtn);
-        mainMenu.add(swapBtn);
-        
-        frame.setContentPane(mainMenu);
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    public static void switchPanel(JFrame frame, JPanel panel) {
-        frame.setContentPane(panel);
-        frame.revalidate();
-        frame.repaint();
     }
 }

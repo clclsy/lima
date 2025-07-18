@@ -158,8 +158,12 @@ public class CSVToDBImporter {
     }
 
     public void importCSV(String csvPath, String tableName) throws Exception {
+        
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        
         try (BufferedReader br = new BufferedReader(new FileReader(csvPath));
-             Connection conn = DriverManager.getConnection(dbUrl, user, password)) {
+        
+            Connection conn = DriverManager.getConnection(dbUrl, user, password)) {
             
             conn.setAutoCommit(false);
             String headerLine = br.readLine();

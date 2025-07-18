@@ -1,62 +1,57 @@
 package nutrisci.view;
 
+import nutrisci.model.Meal;
+import nutrisci.model.NutritionalGoal;
+import nutrisci.template.Base;
+import nutrisci.template.DatePicker;
+import nutrisci.template.Styles;
+
+import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
-import javax.swing.*;
-import nutrisci.logic.MealLogger;
-import nutrisci.logic.SmartSwapEngine;
-import nutrisci.model.*;
 
-public class FoodSwapPanel extends JPanel {
+public class FoodSwapPanel extends Base {
     public FoodSwapPanel(JFrame frame) {
-        setLayout(new GridLayout(8, 2));
+        super(frame);
 
-        JTextField nameField = new JTextField();  // user
-        JTextField dateField = new JTextField(LocalDate.now().toString());
+        JPanel form = new JPanel();
+        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
+        form.setBackground(Styles.background);
 
-        JComboBox<String> nutrientBox = new JComboBox<>(new String[]{"fiber"});
-        JTextField targetField = new JTextField("5");
-        JCheckBox increaseBox = new JCheckBox("Increase");
+        JTextField nameField = new JTextField(15);
+        DatePicker datePicker = new DatePicker();
+        JTextField nutrientField = new JTextField("fiber");
+        JTextField changeField = new JTextField("5");
+        JCheckBox increase = new JCheckBox("Increase this nutrient");
 
-        JButton suggestBtn = new JButton("Suggest Swaps");
-        JTextArea outputArea = new JTextArea();
-        JButton backBtn = new JButton("Back");
+        JButton swapBtn = new JButton("Suggest Swaps");
+        JTextArea outputArea = new JTextArea(6, 30);
+        outputArea.setEditable(false);
 
-        add(new JLabel("User Name:")); add(nameField);
-        add(new JLabel("Date (yyyy-mm-dd):")); add(dateField);
-        add(new JLabel("Nutrient:")); add(nutrientBox);
-        add(new JLabel("Target Change:")); add(targetField);
-        add(increaseBox); add(new JLabel());
-        add(suggestBtn); add(backBtn);
-        add(new JLabel("Suggestions:")); add(new JScrollPane(outputArea));
-
-        suggestBtn.addActionListener(e -> {
+        swapBtn.addActionListener(e -> {
             try {
-                String user = nameField.getText();
-                LocalDate date = LocalDate.parse(dateField.getText());
-
-                List<Meal> meals = MealLogger.getMealsForDate(user, date);
-                if (meals.isEmpty()) {
-                    outputArea.setText("No meals found for that date.");
-                    return;
-                }
-
-                NutritionalGoal goal = new NutritionalGoal(
-                        (String) nutrientBox.getSelectedItem(),
-                        Double.parseDouble(targetField.getText()),
-                        increaseBox.isSelected()
-                );
-
-                List<String> suggestions = SmartSwapEngine.suggestSwaps(meals.get(0), List.of(goal));
-                outputArea.setText(String.join("\n", suggestions));
-
-            } catch (NumberFormatException ex) {
+                String nutrient = nutrientField.getText();
+                double amount = Double.parseDouble(changeField.getText());
+                boolean isInc = increase.isSelected();
+                String result = "Mock suggestion for " + nutrient + " by " + amount + (isInc ? " ↑" : " ↓");
+                outputArea.setText(result);
+            } catch (Exception ex) {
                 outputArea.setText("Error: " + ex.getMessage());
             }
         });
 
-        backBtn.addActionListener(e -> nutrisci.MainApp.showMainMenu(frame));
-        
+        form.add(new JLabel("Name:")); form.add(nameField);
+        form.add(Box.createVerticalStrut(10));
+        form.add(new JLabel("Meal Date:")); form.add(datePicker);
+        form.add(Box.createVerticalStrut(10));
+        form.add(new JLabel("Nutrient:")); form.add(nutrientField);
+        form.add(new JLabel("Amount:")); form.add(changeField);
+        form.add(increase);
+        form.add(swapBtn);
+        form.add(new JScrollPane(outputArea));
+
+        add(createTopPanel(new MainMenu(frame)), BorderLayout.NORTH);
+        add(createCenterPanel(form), BorderLayout.CENTER);
     }
 }

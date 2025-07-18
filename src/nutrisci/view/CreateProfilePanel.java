@@ -2,57 +2,57 @@ package nutrisci.view;
 
 import java.awt.*;
 import javax.swing.*;
-import nutrisci.MainApp;
-import nutrisci.controller.ProfileController;
+import nutrisci.db.UserProfileDAO;
 import nutrisci.model.UserProfile;
+import nutrisci.template.Base;
+import nutrisci.template.ProfileForm;
+import nutrisci.template.Styles;
 
-public class CreateProfilePanel extends JPanel {
+public class CreateProfilePanel extends Base {
+
     public CreateProfilePanel(JFrame frame) {
-        setLayout(new GridLayout(8, 2));
+        super(frame);
+        initializer(frame);
+    }
 
-        JTextField nameField = new JTextField();
-        JTextField dobField = new JTextField();
-        JTextField genderField = new JTextField();
-        JTextField heightField = new JTextField();
-        JTextField weightField = new JTextField();
-        JComboBox<String> unitBox = new JComboBox<>(new String[] { "Metric", "Imperial" });
+    @SuppressWarnings("UseSpecificCatch")
+    private void initializer(JFrame frame) {
+        // Back button
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setOpaque(false);
+        topPanel.add(createBackButton(new UserSelectPanel(frame)));
+        add(topPanel, BorderLayout.NORTH);
 
-        JButton createBtn = new JButton("Create Profile");
-        JLabel statusLabel = new JLabel("");
+        // Profile form
+        ProfileForm form = new ProfileForm("Create New Profile");
+        JPanel container = new JPanel(new GridBagLayout());
+        container.setBackground(Styles.background);
+        container.add(form);
+        add(container, BorderLayout.CENTER);
 
-        add(new JLabel("Name:"));
-        add(nameField);
-        add(new JLabel("Date of Birth (yyyy-mm-dd):"));
-        add(dobField);
-        add(new JLabel("Gender:"));
-        add(genderField);
-        add(new JLabel("Height:"));
-        add(heightField);
-        add(new JLabel("Weight:"));
-        add(weightField);
-        add(new JLabel("Unit:"));
-        add(unitBox);
-        add(createBtn);
-        add(statusLabel);
+        // Save logic
+        form.setOnSave(e -> {
+            if (!form.display_errors(this)) return;
 
-        createBtn.addActionListener(e -> {
             try {
                 UserProfile profile = new UserProfile(
-                        nameField.getText(),
-                        dobField.getText(),
-                        genderField.getText(),
-                        Double.parseDouble(heightField.getText()),
-                        Double.parseDouble(weightField.getText()),
-                        (String) unitBox.getSelectedItem());
-                ProfileController.saveProfile(profile);
-                statusLabel.setText("Profile created!");
-            } catch (NumberFormatException ex) {
-                statusLabel.setText("Error: " + ex.getMessage());
+                    form.getNameText(),
+                    form.getDOBText(),
+                    form.getGender(),
+                    Double.parseDouble(form.getHeightValue()),
+                    Double.parseDouble(form.getWeightValue()),
+                    form.getUnit()
+                );
+                
+                UserProfileDAO.insertProfile(profile);
+                System.out.println("Inserted: " + profile.getName() + " " + profile.getDob());
+                JOptionPane.showMessageDialog(this, "Profile created successfully!");
+                frame.setContentPane(new UserSelectPanel(frame));
+                frame.revalidate();
+                frame.repaint();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error saving profile: " + ex.getMessage());
             }
         });
-        JButton backBtn = new JButton("Back to Menu");
-        backBtn.addActionListener(e -> MainApp.showMainMenu(frame));
-        add(backBtn);
-
     }
-}
+} 

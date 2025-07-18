@@ -95,3 +95,14 @@ CREATE TABLE YieldDescriptions (
     description_en VARCHAR(255),
     description_fr VARCHAR(255)
 );
+
+CREATE TABLE user_profiles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    dob VARCHAR(20),
+    gender VARCHAR(10),
+    height DOUBLE,
+    weight DOUBLE,
+    unit VARCHAR(10)
+);
+
