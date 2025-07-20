@@ -8,8 +8,14 @@ public abstract class Base extends JPanel {
 
     public Base(JFrame frame) {
         this.frame = frame;
-        setBackground(Styles.background);
-        setLayout(new BorderLayout());
+        try {
+            setBackground(Color.PINK); // Just to confirm this is the issue
+
+            setLayout(new BorderLayout());
+        } catch (Exception e) {
+            System.err.println("Error in Base constructor: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public JPanel createTopPanel(JPanel destination) {

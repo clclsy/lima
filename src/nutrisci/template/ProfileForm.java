@@ -266,6 +266,10 @@ public class ProfileForm extends JPanel {
     public void setEditable(boolean lockNameAndDob) {
         name.setEditable(!lockNameAndDob);
         dob.setEditable(!lockNameAndDob);
+        gender.setEditable(lockNameAndDob);
+        unit.setEditable(lockNameAndDob);
+        height.setEditable(lockNameAndDob);
+        weight.setEditable(lockNameAndDob);
     }
 
 }

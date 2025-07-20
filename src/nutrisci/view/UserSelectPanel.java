@@ -68,22 +68,24 @@ public class UserSelectPanel extends JPanel {
         grid.setBackground(Styles.background);
 
         List<UserProfile> profiles = UserProfileDAO.getAllProfiles();
-        //for tests
+        // for tests
         System.out.println("Profiles in DB: " + profiles.size());
         for (UserProfile p : profiles) {
             System.out.println("- " + p.getName());
         }
 
         /**
-        if user_profiles table empty, display msg. if not empty, display all profiles
-        */
+         * if user_profiles table empty, display msg. if not empty, display all profiles
+         */
         if (profiles.isEmpty()) {
             JLabel msg = new JLabel("No profiles found. Please create one.");
             msg.setFont(Styles.small_font);
             grid.add(msg);
         } else {
             for (UserProfile p : profiles) {
-                JButton btn = new JButton(p.getName());
+                UserProfile profileCopy = p; // capture the current profile safely
+
+                JButton btn = new JButton(profileCopy.getName());
                 btn.setPreferredSize(new Dimension(90, 90));
                 btn.setFont(Styles.default_font);
                 btn.setBackground(Styles.lightorange);
@@ -92,7 +94,9 @@ public class UserSelectPanel extends JPanel {
                 btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
                 btn.addActionListener(e -> {
-                    frame.setContentPane(new UserDashboardPanel(frame, p));
+                    System.out.println("✅ Selected profile: " + profileCopy.getName());
+                    frame.setContentPane(new UserDashboardPanel(frame, profileCopy));
+                    frame.invalidate();
                     frame.revalidate();
                     frame.repaint();
                 });
@@ -107,7 +111,7 @@ public class UserSelectPanel extends JPanel {
 
     private JPanel bottom_panel() {
         JPanel bottom = new JPanel();
-        bottom.setBackground(new Color(255, 251, 245));
+        bottom.setBackground(Styles.background);
         bottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
         JButton createbtn = new JButton("+ Create New Profile");

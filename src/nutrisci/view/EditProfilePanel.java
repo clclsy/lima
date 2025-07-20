@@ -8,34 +8,40 @@ import nutrisci.template.Base;
 import nutrisci.template.ProfileForm;
 import nutrisci.template.Styles;
 
-public class CreateProfilePanel extends Base {
+public class EditProfilePanel extends Base {
 
-    public CreateProfilePanel(JFrame frame) {
+    public EditProfilePanel(JFrame frame, UserProfile profile) {
         super(frame);
-        initializer(frame);
+        initializer(frame, profile);
     }
 
     @SuppressWarnings("UseSpecificCatch")
-    private void initializer(JFrame frame) {
+    private void initializer(JFrame frame, UserProfile profile) {
         // Back button
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setOpaque(false);
-        topPanel.add(createBackButton(new UserSelectPanel(frame)));
+        topPanel.add(createBackButton(new UserDashboardPanel(frame, profile)));
         add(topPanel, BorderLayout.NORTH);
 
         // Profile form
-        ProfileForm form = new ProfileForm("Create New Profile");
+        ProfileForm form = new ProfileForm("Edit Profile");
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Styles.background);
         container.add(form);
         add(container, BorderLayout.CENTER);
+
+        // Prefill form with profile data
+        form.setProfileData(profile);
+
+        // Enable editting
+        form.setEditable(true);
 
         // Add to db
         form.setOnSave(e -> {
             if (!form.display_errors(this)) return;
 
             try {
-                UserProfile profile = new UserProfile(
+                UserProfile updatedProfile = new UserProfile(
                     form.getNameText(),
                     form.getDOBText(),
                     form.getGender(),
@@ -44,14 +50,18 @@ public class CreateProfilePanel extends Base {
                     form.getUnit()
                 );
                 
-                UserProfileDAO.insertProfile(profile);
-                System.out.println("Inserted: " + profile.getName() + " " + profile.getDob());
-                JOptionPane.showMessageDialog(this, "Profile created successfully!");
-                frame.setContentPane(new UserSelectPanel(frame));
-                frame.revalidate();
-                frame.repaint();
+                boolean success = UserProfileDAO.updateProfile(updatedProfile);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Profile updated successfully!");
+                    frame.setContentPane(new UserSelectPanel(frame));
+                    frame.revalidate();
+                    frame.repaint();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to update profile in database.");
+                }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error saving profile: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error saving changes: " + ex.getMessage());
             }
         });
     }

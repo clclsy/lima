@@ -31,6 +31,27 @@ public class UserProfileDAO {
         }
     }
 
+    public static boolean updateProfile(UserProfile p) {
+        String sql = "UPDATE user_profiles SET gender = ?, height = ?, weight = ?, unit = ? WHERE name = ? AND dob = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            stmt.setString(1, p.getGender());
+            stmt.setDouble(2, p.getHeight());
+            stmt.setDouble(3, p.getWeight());
+            stmt.setString(4, p.getUnit());
+            stmt.setString(5, p.getName());
+            stmt.setString(6, p.getDob());
+
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static List<UserProfile> getAllProfiles() {
         List<UserProfile> profiles = new ArrayList<>();
         String sql = "SELECT * FROM user_profiles";
@@ -56,4 +77,9 @@ public class UserProfileDAO {
         }
         return profiles;
     }
+
+    public static boolean deleteProfile(UserProfile profile) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }
