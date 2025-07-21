@@ -12,6 +12,7 @@ public class Styles {
     public static Font dtitle_font = new Font("Georgia", Font.BOLD, 20);
     public static Font title_font = new Font("Georgia", Font.PLAIN, 20);
     public static Font bdefault_font = new Font("Helvetica", Font.BOLD, 16);
+    public static Font ismall_font = new Font("Helvetica", Font.ITALIC, 12);
     public static Font default_font = new Font("Helvetica", Font.PLAIN, 16);
     public static Font small_font = new Font("Helvetica", Font.PLAIN, 14);
 }

@@ -106,3 +106,19 @@ CREATE TABLE user_profiles (
     unit VARCHAR(10)
 );
 
+CREATE TABLE meals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(255),
+    meal_date DATE,
+    meal_type VARCHAR(50)
+);
+
+CREATE TABLE meal_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    meal_id INT,
+    ingredient VARCHAR(255),
+    quantity DOUBLE,
+    FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE
+);
+
+

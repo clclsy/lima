@@ -11,9 +11,7 @@ public class UserDashboardPanel extends Base {
 
     public UserDashboardPanel(JFrame frame, UserProfile profile) {
         super(frame);
-        System.out.println("UserDashboardPanel constructor called for profile: " + profile.getName());
         init(frame, profile);
-        System.out.println("UserDashboardPanel init completed.");
     }
 
     private void init(JFrame frame, UserProfile profile) {
@@ -29,14 +27,23 @@ public class UserDashboardPanel extends Base {
         ImageIcon editIcon = new ImageIcon(edit_image);
         ImageIcon dishIcon = new ImageIcon(dish_image);
 
-        // Top Panel: Back button
-        add(createTopPanel(new UserSelectPanel(frame)), BorderLayout.NORTH);
+        // Top panel with back button and greeting centered
+        JPanel top = new JPanel(new BorderLayout());
+        top.setBackground(Styles.background);
 
-        // Greeting
+        // Back button on the left
+        top.add(createTopPanel(new UserSelectPanel(frame)), BorderLayout.WEST);
+
+        // Centered greeting
         JLabel greeting = new JLabel("Hello, " + profile.getName() + "!");
-        greeting.setFont(Styles.title_font);
+        greeting.setFont(Styles.dtitle_font);
         greeting.setHorizontalAlignment(SwingConstants.CENTER);
-        greeting.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        greeting.setBorder(BorderFactory.createEmptyBorder(60, 0, 20, 0));
+
+        top.add(greeting, BorderLayout.CENTER);
+
+        // Add to main panel
+        add(top, BorderLayout.NORTH);
 
         // Center Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
@@ -54,11 +61,13 @@ public class UserDashboardPanel extends Base {
         editBtn.addActionListener(e -> {
             frame.setContentPane(new EditProfilePanel(frame, profile));
             frame.revalidate();
+            frame.repaint();
         });
 
         dietBtn.addActionListener(e -> {
-            // frame.setContentPane(new DietDashboardPanel(frame, profile));
-            // frame.revalidate();
+            frame.setContentPane(new DietDashboardPanel(frame, profile));
+            frame.revalidate();
+            frame.repaint();
         });
 
         deleteBtn.addActionListener(e -> {
@@ -83,7 +92,7 @@ public class UserDashboardPanel extends Base {
         buttonPanel.add(dietBtn);
         buttonPanel.add(deleteBtn);
 
-        add(createCenterPanel(greeting, buttonPanel), BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.CENTER);
     }
 
     private JButton createSquareButton(String text, ImageIcon icon, Color bg) {

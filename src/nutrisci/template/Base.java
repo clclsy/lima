@@ -8,14 +8,8 @@ public abstract class Base extends JPanel {
 
     public Base(JFrame frame) {
         this.frame = frame;
-        try {
-            setBackground(Color.PINK); // Just to confirm this is the issue
-
-            setLayout(new BorderLayout());
-        } catch (Exception e) {
-            System.err.println("Error in Base constructor: " + e.getMessage());
-            e.printStackTrace();
-        }
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBackground(Styles.background);
     }
 
     public JPanel createTopPanel(JPanel destination) {
@@ -28,7 +22,7 @@ public abstract class Base extends JPanel {
     public JPanel createCenterPanel(Component... components) {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(new Color(255, 251, 245));
+        centerPanel.setBackground(Styles.background);
         for (Component comp : components) {
             centerPanel.add(comp);
         }
@@ -68,4 +62,18 @@ public abstract class Base extends JPanel {
         component.setAlignmentX(Component.CENTER_ALIGNMENT);
         return component;
     }
+
+    // Reusable card panel
+    public JPanel createCardPanel() {
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 230), 2, true),
+                BorderFactory.createEmptyBorder(30, 40, 30, 40)));
+        card.setPreferredSize(new Dimension(450, 500));
+        card.setMaximumSize(new Dimension(600, 650));
+        card.setMinimumSize(new Dimension(350, 400));
+        return card;
+    }
+
 }

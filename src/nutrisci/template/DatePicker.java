@@ -13,12 +13,17 @@ public class DatePicker extends JPanel {
         setBackground(Styles.background);
 
         startDate = new JTextField(LocalDate.now().minusDays(7).toString(), 10);
+        startDate.setFont(Styles.small_font);
         endDate = new JTextField(LocalDate.now().toString(), 10);
-
-        add(new JLabel("From: "));
+        endDate.setFont(Styles.small_font);
+        JLabel startLabel = new JLabel("From:");
+        startLabel.setFont(Styles.small_font);
+        JLabel endLabel = new JLabel("To:");
+        endLabel.setFont(Styles.small_font);
+        add(startLabel);
         add(startDate);
         add(Box.createHorizontalStrut(10));
-        add(new JLabel("To: "));
+        add(endLabel);
         add(endDate);
     }
 

@@ -24,7 +24,7 @@ public class EditProfilePanel extends Base {
         add(topPanel, BorderLayout.NORTH);
 
         // Profile form
-        ProfileForm form = new ProfileForm("Edit Profile");
+        ProfileForm form = new ProfileForm("Edit Profile", this);
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Styles.background);
         container.add(form);

@@ -18,24 +18,21 @@ public class ProfileForm extends JPanel {
     private final JLabel weight_unit = new JLabel();
     private final Map<String, JComponent> inputs = new LinkedHashMap<>();
     private final JButton saveBtn = new JButton();
+    private final JPanel card;
 
     // Form Layout
-    public ProfileForm(String title) {
-        setLayout(new GridBagLayout());
-        setBackground(Color.WHITE);
-        setOpaque(true);
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(230, 230, 230), 2, true),
-                BorderFactory.createEmptyBorder(30, 40, 30, 40)));
-        setPreferredSize(new Dimension(450, 500));
-        setMaximumSize(new Dimension(600, 650));
-        setMinimumSize(new Dimension(350, 400));
+    public ProfileForm(String title, Base b) {
+        this.card = b.createCardPanel();
+        setLayout(new BorderLayout());
+        add(card, BorderLayout.CENTER);
+
+        card.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Title 
+        // Title
         JLabel formTitle = new JLabel(title);
         formTitle.setFont(Styles.dtitle_font);
         GridBagConstraints titleGbc = new GridBagConstraints();
@@ -44,7 +41,7 @@ public class ProfileForm extends JPanel {
         titleGbc.gridwidth = 2;
         titleGbc.insets = new Insets(0, 10, 30, 10);
         titleGbc.anchor = GridBagConstraints.CENTER;
-        add(formTitle, titleGbc);
+        card.add(formTitle, titleGbc);
 
         // Adding different rows in form
         int row = 1;
@@ -81,7 +78,7 @@ public class ProfileForm extends JPanel {
         btnGbc.gridwidth = 2;
         btnGbc.anchor = GridBagConstraints.CENTER;
         btnGbc.insets = new Insets(20, 10, 10, 10);
-        add(button_panel, btnGbc);
+        card.add(button_panel, btnGbc);
 
     }
 
@@ -93,16 +90,18 @@ public class ProfileForm extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.anchor = GridBagConstraints.EAST;
-        add(lbl, gbc);
+        card.add(lbl, gbc);
 
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        add(input, gbc);
+        input.setFont(Styles.default_font);
+
+        card.add(input, gbc);
 
         inputs.put(label, input);
 
     }
-    
+
     // Add fillable row with unit like height
     private void add_row_unit(String label, JTextField field, JLabel unit, GridBagConstraints gbc, int row) {
         JLabel lbl = new JLabel(label);
@@ -110,7 +109,7 @@ public class ProfileForm extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.anchor = GridBagConstraints.EAST;
-        add(lbl, gbc);
+        card.add(lbl, gbc);
 
         field.setFont(Styles.default_font);
         unit.setFont(Styles.default_font);
@@ -123,7 +122,7 @@ public class ProfileForm extends JPanel {
 
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        add(fieldPanel, gbc);
+        card.add(fieldPanel, gbc);
 
         inputs.put(label, field);
     }
@@ -140,6 +139,7 @@ public class ProfileForm extends JPanel {
                     dob.setText("");
                 }
             }
+
             // When not or not being filled, shows acceptable format
             @Override
             public void focusLost(FocusEvent e) {
@@ -169,8 +169,12 @@ public class ProfileForm extends JPanel {
         return name.getText().trim();
     }
 
-    public String getDOBText() {
-        return dob.getText().trim();
+    public LocalDate getDOBText() {
+        try {
+            return LocalDate.parse(dob.getText().trim());
+        } catch (Exception e) {
+            return null; // or throw a validation exception
+        }
     }
 
     public String getGender() {
@@ -191,8 +195,7 @@ public class ProfileForm extends JPanel {
 
     public boolean isComplete() {
         return !getNameText().isEmpty()
-                && !getDOBText().isEmpty()
-                && !getDOBText().equals("YYYY-MM-DD")
+                && getDOBText() != null
                 && !getGender().equals("Select...")
                 && !getUnit().equals("Select...")
                 && !getHeightValue().isEmpty()
@@ -201,7 +204,7 @@ public class ProfileForm extends JPanel {
 
     public boolean isValidDOB() {
         try {
-            LocalDate birthDate = LocalDate.parse(getDOBText());
+            LocalDate birthDate = getDOBText();
             LocalDate today = LocalDate.now();
             int age = Period.between(birthDate, today).getYears();
             return !birthDate.isAfter(today) && age >= 5 && age <= 120;
@@ -243,7 +246,7 @@ public class ProfileForm extends JPanel {
         return true;
 
     }
-    
+
     // Methods for editing
     public Map<String, JComponent> getInputs() {
         return inputs;
@@ -255,7 +258,7 @@ public class ProfileForm extends JPanel {
 
     public void setProfileData(UserProfile p) {
         name.setText(p.getName());
-        dob.setText(p.getDob());
+        dob.setText(p.getDob().toString());
         gender.setSelectedItem(p.getGender());
         unit.setSelectedItem(p.getUnit());
         height.setText(String.valueOf(p.getHeight()));

@@ -1,26 +1,34 @@
 package nutrisci.model;
 
-import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-public class UserProfile implements Serializable {
-    private String name, dob, gender;
-    private double height, weight;
+public class UserProfile {
+    private int id;
+    private String name;
+    private LocalDate dob;
+    private String gender;
+    private double height;
+    private double weight;
     private String unit;
+    private List<Meal> meals;
 
-    public UserProfile(String name, String dob, String gender, double height, double weight, String unit) {
+    public UserProfile(String name, LocalDate dob, String gender, double height, double weight, String unit) {
         this.name = name;
         this.dob = dob;
         this.gender = gender;
         this.height = height;
         this.weight = weight;
         this.unit = unit;
+        this.meals = new ArrayList<>();
     }
 
     public String getName() {
         return name;
     }
 
-    public String getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
@@ -40,22 +48,48 @@ public class UserProfile implements Serializable {
         return unit;
     }
 
-    public void update(String gender, double height, double weight, String unit) {
-        this.gender = gender;
-        this.height = height;
-        this.weight = weight;
-        this.unit = unit;
+    public List<Meal> getMeals() {
+        return meals;
+    }
+
+    public void addMeal(Meal meal) {
+        meals.add(meal);
+    }
+
+    public void setMeals(List<Meal> meals) {
+        this.meals = meals;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setDob(String dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 
     public void setGender(String gender) {
         this.gender = gender;
     }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
 }

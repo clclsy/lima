@@ -68,11 +68,6 @@ public class UserSelectPanel extends JPanel {
         grid.setBackground(Styles.background);
 
         List<UserProfile> profiles = UserProfileDAO.getAllProfiles();
-        // for tests
-        System.out.println("Profiles in DB: " + profiles.size());
-        for (UserProfile p : profiles) {
-            System.out.println("- " + p.getName());
-        }
 
         /**
          * if user_profiles table empty, display msg. if not empty, display all profiles
@@ -94,9 +89,7 @@ public class UserSelectPanel extends JPanel {
                 btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
                 btn.addActionListener(e -> {
-                    System.out.println("✅ Selected profile: " + profileCopy.getName());
                     frame.setContentPane(new UserDashboardPanel(frame, profileCopy));
-                    frame.invalidate();
                     frame.revalidate();
                     frame.repaint();
                 });

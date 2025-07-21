@@ -1,20 +1,12 @@
 package nutrisci.view;
 
-import nutrisci.model.Meal;
-import nutrisci.model.NutritionalGoal;
-import nutrisci.template.Base;
-import nutrisci.template.DatePicker;
-import nutrisci.template.Styles;
-
 import javax.swing.*;
-import java.awt.*;
-import java.time.LocalDate;
-import java.util.List;
+import nutrisci.template.Base;
 
 public class FoodSwapPanel extends Base {
     public FoodSwapPanel(JFrame frame) {
         super(frame);
-
+/**
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
         form.setBackground(Styles.background);
@@ -52,6 +44,7 @@ public class FoodSwapPanel extends Base {
         form.add(new JScrollPane(outputArea));
 
         add(createTopPanel(new MainMenu(frame)), BorderLayout.NORTH);
-        add(createCenterPanel(form), BorderLayout.CENTER);
+        add(createCenterPanel(form), BorderLayout.CENTER); */
     }
+   
 }
