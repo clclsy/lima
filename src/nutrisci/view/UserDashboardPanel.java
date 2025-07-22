@@ -23,11 +23,14 @@ public class UserDashboardPanel extends Base {
         Image edit_image = new ImageIcon("src/edit.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image dish_image = new ImageIcon("src/dish.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image ng_image = new ImageIcon("src/health.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        Image chart_image = new ImageIcon("src/viz_chart.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH); //// need image icon
         
         ImageIcon binIcon = new ImageIcon(bin_image);
         ImageIcon editIcon = new ImageIcon(edit_image);
         ImageIcon dishIcon = new ImageIcon(dish_image);
         ImageIcon ngIcon = new ImageIcon(ng_image);
+        ImageIcon viz_chartIcon = new ImageIcon(chart_image); //// 
+        
         // Top panel with back button and greeting centered
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Styles.background);
@@ -54,6 +57,8 @@ public class UserDashboardPanel extends Base {
         JButton dietBtn = createSquareButton("View Diet", dishIcon, new Color(200, 255, 200));
         JButton deleteBtn = createSquareButton("Delete Profile", binIcon, new Color(255, 210, 210));
         JButton nutrigoalBtn = createSquareButton("Nutritional goal", ngIcon, new Color(210, 255, 255));
+        JButton visualizeBtn = createSquareButton("Visualize Swaps", chartIcon, new Color(220, 220, 255)); //// need viz.chart icon
+
 
         // Button Actions
         editBtn.addActionListener(e -> {
@@ -92,10 +97,17 @@ public class UserDashboardPanel extends Base {
             frame.repaint();
         });
 
+        visualizeBtn.addActionListener(e -> { //// 
+        frame.setContentPane(new VisualizeSwapPanel(frame, profile)); //// 
+        frame.revalidate(); //// 
+        frame.repaint(); //// 
+        });
+
         buttonPanel.add(editBtn);
         buttonPanel.add(dietBtn);
         buttonPanel.add(deleteBtn);
-
+        buttonPanel.add(visualizeBtn); ////
+        
         add(buttonPanel, BorderLayout.CENTER);
     }
 
