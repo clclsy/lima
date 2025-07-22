@@ -8,7 +8,7 @@ import nutrisci.model.MealItem;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
+ 
 //VisualizationController:
 //Handles UC8 logic for nutrient visualization:
  //Bar Chart: Compare Before vs After (splits meals in date range) | Line Chart: Nutrient trend over time
