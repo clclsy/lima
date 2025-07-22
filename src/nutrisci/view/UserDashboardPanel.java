@@ -22,11 +22,12 @@ public class UserDashboardPanel extends Base {
         Image bin_image = new ImageIcon("src/recycle-bin.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image edit_image = new ImageIcon("src/edit.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image dish_image = new ImageIcon("src/dish.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-
+        Image ng_image = new ImageIcon("src/health.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        
         ImageIcon binIcon = new ImageIcon(bin_image);
         ImageIcon editIcon = new ImageIcon(edit_image);
         ImageIcon dishIcon = new ImageIcon(dish_image);
-
+        ImageIcon ngIcon = new ImageIcon(ng_image);
         // Top panel with back button and greeting centered
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Styles.background);
@@ -52,10 +53,7 @@ public class UserDashboardPanel extends Base {
         JButton editBtn = createSquareButton("Edit Profile", editIcon, new Color(255, 234, 200));
         JButton dietBtn = createSquareButton("View Diet", dishIcon, new Color(200, 255, 200));
         JButton deleteBtn = createSquareButton("Delete Profile", binIcon, new Color(255, 210, 210));
-
-        dietBtn.setIcon(dishIcon);
-        editBtn.setIcon(editIcon);
-        deleteBtn.setIcon(binIcon);
+        JButton nutrigoalBtn = createSquareButton("Nutritional goal", ngIcon, new Color(210, 255, 255));
 
         // Button Actions
         editBtn.addActionListener(e -> {
@@ -86,6 +84,12 @@ public class UserDashboardPanel extends Base {
                     JOptionPane.showMessageDialog(frame, "Failed to delete profile.");
                 }
             }
+        });
+
+        nutrigoalBtn.addActionListener(e -> {
+            frame.setContentPane(new NutritionalGoalPanel(frame, profile));
+            frame.revalidate();
+            frame.repaint();
         });
 
         buttonPanel.add(editBtn);

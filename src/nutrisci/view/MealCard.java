@@ -11,9 +11,11 @@ public class MealCard extends JPanel {
     public MealCard(Meal meal) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(250, 200));
-        setMaximumSize(new Dimension(250, 200));
-        setMinimumSize(new Dimension(250, 200));
+        // Set all size constraints to be identical
+        Dimension cardSize = new Dimension(250, 200);
+        setPreferredSize(cardSize);
+        setMaximumSize(cardSize);
+        setMinimumSize(cardSize);
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
                 BorderFactory.createEmptyBorder(10, 12, 10, 12)));
