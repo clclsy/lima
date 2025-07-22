@@ -69,7 +69,7 @@ public class LogMealPanel extends Base {
         gbc.gridwidth = 2;
         card.add(new JLabel("Ingredients (name, quantity in grams):"), gbc);
         gbc.gridy++;
-        ingredient_input = new IngredientAdding();
+        ingredient_input = new IngredientAdding(frame);
         JScrollPane ingScroll = new JScrollPane(ingredient_input);
         ingScroll.setPreferredSize(new Dimension(300, 120));
         card.add(ingScroll, gbc);
@@ -133,7 +133,7 @@ public class LogMealPanel extends Base {
             frame.setContentPane(diet);
             frame.revalidate();
             frame.repaint();
-        } catch (Exception e) {
+        } catch (HeadlessException e) {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
         }
     }

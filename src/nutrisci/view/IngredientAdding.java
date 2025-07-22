@@ -3,12 +3,14 @@ package nutrisci.view;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import nutrisci.template.Base;
 
-public final class IngredientAdding extends JPanel {
+public final class IngredientAdding extends Base {
     private final ArrayList<JTextField> names = new ArrayList<>();
     private final ArrayList<JTextField> quantities = new ArrayList<>();
 
-    public IngredientAdding() {
+    public IngredientAdding(JFrame frame) {
+        super(frame);
         setLayout(new GridLayout(0, 2, 5, 5));
         setBackground(Color.WHITE);
         for (int i = 0; i < 3; i++) {

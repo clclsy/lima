@@ -87,7 +87,8 @@ public class UserDashboardPanel extends Base {
         });
 
         nutrigoalBtn.addActionListener(e -> {
-            frame.setContentPane(new NutritionalGoalPanel(frame, profile));
+    System.out.println("Opening RequestSwapPanel...");
+            frame.setContentPane(new RequestSwapPanel(frame, profile));
             frame.revalidate();
             frame.repaint();
         });
@@ -95,6 +96,7 @@ public class UserDashboardPanel extends Base {
         buttonPanel.add(editBtn);
         buttonPanel.add(dietBtn);
         buttonPanel.add(deleteBtn);
+        buttonPanel.add(nutrigoalBtn);
 
         add(buttonPanel, BorderLayout.CENTER);
     }
