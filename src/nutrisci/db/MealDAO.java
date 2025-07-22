@@ -15,7 +15,7 @@ public class MealDAO {
 
     @SuppressWarnings("CallToPrintStackTrace")
     public static void insertMeal(int userId, Meal meal) {
-        String sqlMeal = "INSERT INTO meals(user_id, date, type) VALUES (?, ?, ?)";
+        String sqlMeal = "INSERT INTO meals(user_id, meal_date, meal_type) VALUES (?, ?, ?)";
         String sqlItem = "INSERT INTO meal_items(meal_id, ingredient, quantity) VALUES (?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);

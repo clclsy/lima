@@ -11,14 +11,14 @@ public final class IngredientAdding extends JPanel {
     public IngredientAdding() {
         setLayout(new GridLayout(0, 2, 5, 5));
         setBackground(Color.WHITE);
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             addRow();
         }
     }
 
     public void addRow() {
         JTextField name = placeholderField("e.g. Apple");
-        JTextField qty = placeholderField("100");
+        JTextField qty = placeholderField("e.g. 100");
 
         names.add(name);
         quantities.add(qty);
@@ -34,7 +34,9 @@ public final class IngredientAdding extends JPanel {
         for (int i = 0; i < names.size(); i++) {
             String n = names.get(i).getText().trim();
             String q = quantities.get(i).getText().trim();
-            if (!n.isEmpty() && !q.isEmpty()) {
+            if (!n.isEmpty() && !q.isEmpty() &&
+                    !n.equalsIgnoreCase("e.g. Apple") &&
+                    !q.equals("e.g. 100")) {
                 rows.add(new String[] { n, q });
             }
         }

@@ -19,62 +19,60 @@ public class LogMealPanel extends Base {
     public LogMealPanel(JFrame frame, UserProfile profile) {
         super(frame);
         this.profile = profile;
-        
+
         setLayout(new BorderLayout());
         add(createTopPanel(new DietDashboardPanel(frame, profile)), BorderLayout.NORTH);
 
-        // Form
-        JPanel formCard = createCardPanel();
+        // Center panel with form card
+        JPanel center = new JPanel(new GridBagLayout());
+        center.setBackground(Styles.background);
 
+        JPanel card = createCardPanel();
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(8, 10, 8, 10);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.NONE;
 
-        JLabel formTitle = new JLabel("Log a Meal");
-        formTitle.setFont(Styles.dtitle_font);
+        // Title
+        JLabel title = new JLabel("Log a Meal");
+        title.setFont(Styles.dtitle_font);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        formCard.add(formTitle, gbc);
+        gbc.anchor = GridBagConstraints.CENTER;
+        card.add(title, gbc);
 
         // Date
-        gbc.gridwidth = 1;
         gbc.gridy++;
-        gbc.gridx = 0;
-        JLabel dateLabel = new JLabel("Date (YYYY-MM-DD):");
-        dateLabel.setFont(Styles.default_font);
-        formCard.add(dateLabel, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridwidth = 1;
+        card.add(new JLabel("Date (YYYY-MM-DD):"), gbc);
         gbc.gridx = 1;
         dateField = new JTextField(12);
         dateField.setFont(Styles.default_font);
-        formCard.add(dateField, gbc);
+        card.add(dateField, gbc);
 
-        // Meal Type
-        gbc.gridx = 0;
+        // Meal
         gbc.gridy++;
-        JLabel lbl = new JLabel("Meal Type:");
-        lbl.setFont(Styles.default_font);
-        formCard.add(lbl, gbc);
-
+        gbc.gridx = 0;
+        card.add(new JLabel("Meal Type:"), gbc);
         gbc.gridx = 1;
         mealTypeDropdown = new JComboBox<>(new String[] { "Breakfast", "Lunch", "Dinner", "Snack" });
         mealTypeDropdown.setFont(Styles.default_font);
-        formCard.add(mealTypeDropdown, gbc);
+        card.add(mealTypeDropdown, gbc);
 
-        // Ingredients label
-        gbc.gridx = 0;
+        // Ingredients
         gbc.gridy++;
+        gbc.gridx = 0;
         gbc.gridwidth = 2;
-        JLabel ingLabel = new JLabel("Ingredients (name, quantity):");
-        ingLabel.setFont(Styles.default_font);
-        formCard.add(ingLabel, gbc);
-
-        // Ingredient input
+        card.add(new JLabel("Ingredients (name, quantity in grams):"), gbc);
         gbc.gridy++;
         ingredient_input = new IngredientAdding();
         JScrollPane ingScroll = new JScrollPane(ingredient_input);
         ingScroll.setPreferredSize(new Dimension(300, 120));
-        formCard.add(ingScroll, gbc);
+        card.add(ingScroll, gbc);
 
         // Add Ingredient Button
         gbc.gridy++;
@@ -83,7 +81,7 @@ public class LogMealPanel extends Base {
         addRowBtn.setFont(Styles.default_font);
         addRowBtn.setFocusPainted(false);
         addRowBtn.addActionListener(e -> ingredient_input.addRow());
-        formCard.add(addRowBtn, gbc);
+        card.add(addRowBtn, gbc);
 
         // Submit Button
         gbc.gridy++;
@@ -91,14 +89,10 @@ public class LogMealPanel extends Base {
         logButton.setFont(Styles.default_font);
         logButton.setBackground(new Color(168, 209, 123));
         logButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        logButton.addActionListener(e -> {
-            logMeal();
-        });
-        formCard.add(logButton, gbc);
+        logButton.addActionListener(e -> logMeal());
+        card.add(logButton, gbc);
 
-        JPanel center = new JPanel(new GridBagLayout());
-        center.setBackground(Styles.background);
-        center.add(formCard);
+        center.add(card);
         add(center, BorderLayout.CENTER);
     }
 
@@ -109,32 +103,38 @@ public class LogMealPanel extends Base {
             List<String[]> rows = ingredient_input.getInputRows();
 
             if (rows.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Add at least one ingredient.");
+                JOptionPane.showMessageDialog(this, "Please fill at least one ingredient.",
+                        "Missing Ingredient", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             List<MealItem> items = new ArrayList<>();
             for (String[] row : rows) {
-                String name = row[0];
-                double quantity = Double.parseDouble(row[1]);
-                items.add(new MealItem(name, quantity));
+                try {
+                    String name = row[0];
+                    double quantity = Double.parseDouble(row[1]);
+                    items.add(new MealItem(name, quantity));
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid quantity entered for: " + row[0], "Quantity Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
 
             Meal meal = new Meal(profile.getId(), date, MealType.valueOf(type.toUpperCase()), items);
 
             // Save to DB
-            MealDAO.insertMeal(profile.getId(),meal);
+            MealDAO.insertMeal(profile.getId(), meal);
 
             JOptionPane.showMessageDialog(this, "Meal logged successfully.");
 
-            // Switch to ViewMealsPanel
-            ViewMealsPanel viewPanel = new ViewMealsPanel(frame, profile);
-            frame.setContentPane(viewPanel);
+            // Switch to User Dashboard
+            DietDashboardPanel diet = new DietDashboardPanel(frame, profile);
+            frame.setContentPane(diet);
             frame.revalidate();
             frame.repaint();
-        } catch (HeadlessException | NumberFormatException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Invalid input: " + e.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
