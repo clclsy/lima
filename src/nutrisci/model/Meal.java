@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class Meal {
+    private int id;
     private int userId;
     private LocalDate date;
     private MealType type;
@@ -14,6 +15,22 @@ public class Meal {
         this.date = date;
         this.type = type;
         this.items = items;
+    }
+
+    public Meal(int id, int userId, LocalDate date, MealType type, List<MealItem> items) {
+        this.id = id;
+        this.userId = userId;
+        this.date = date;
+        this.type = type;
+        this.items = items;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getUserId() {

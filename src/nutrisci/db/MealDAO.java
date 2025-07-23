@@ -29,6 +29,7 @@ public class MealDAO {
             ResultSet rs = mealStmt.getGeneratedKeys();
             if (rs.next()) {
                 int mealId = rs.getInt(1);
+                meal.setId(mealId);
                 try (PreparedStatement itemStmt = conn.prepareStatement(sqlItem)) {
                     for (MealItem item : meal.getItems()) {
                         itemStmt.setInt(1, mealId);
@@ -71,7 +72,7 @@ public class MealDAO {
                 if (meal == null) {
                     LocalDate date = rs.getDate("meal_date").toLocalDate();
                     MealType type = MealType.valueOf(rs.getString("meal_type").toUpperCase());
-                    meal = new Meal(userId, date, type, new ArrayList<>());
+                    meal = new Meal(mealId, userId, date, type, new ArrayList<>());
                     mealMap.put(mealId, meal);
                     meals.add(meal);
                 }
@@ -127,6 +128,80 @@ public class MealDAO {
         }
 
         return result;
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    public static boolean applySwapToMeal(int mealId, String oldIngredient, String newIngredient) {
+        String sql = "UPDATE meal_items SET ingredient = ? WHERE meal_id = ? AND ingredient = ?";
+        
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, newIngredient);
+            stmt.setInt(2, mealId);
+            stmt.setString(3, oldIngredient);
+            
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    public static int applySwapToMealsInDateRange(int userId, LocalDate startDate, LocalDate endDate, 
+                                                  String oldIngredient, String newIngredient) {
+        String sql = """
+            UPDATE meal_items 
+            SET ingredient = ? 
+            WHERE meal_id IN (
+                SELECT id FROM meals 
+                WHERE user_id = ? AND meal_date >= ? AND meal_date <= ?
+            ) AND ingredient = ?
+        """;
+        
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, newIngredient);
+            stmt.setInt(2, userId);
+            stmt.setDate(3, Date.valueOf(startDate));
+            stmt.setDate(4, Date.valueOf(endDate));
+            stmt.setString(5, oldIngredient);
+            
+            return stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    public static int applySwapToAllMeals(int userId, String oldIngredient, String newIngredient) {
+        String sql = """
+            UPDATE meal_items 
+            SET ingredient = ? 
+            WHERE meal_id IN (
+                SELECT id FROM meals WHERE user_id = ?
+            ) AND ingredient = ?
+        """;
+        
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, newIngredient);
+            stmt.setInt(2, userId);
+            stmt.setString(3, oldIngredient);
+            
+            return stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
 }

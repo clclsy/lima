@@ -22,6 +22,29 @@ public class VisualizationController {
         this.nutritionDAO = NutritionDataDAO.getInstance();
     }
 
+    public Map<String, Double> getNutrientTotals(int userId, LocalDate startDate, LocalDate endDate) {
+        List<Meal> meals = mealDAO.getMealsByUserId(userId);
+        Map<String, Double> totals = new HashMap<>();
+
+        for (Meal meal : meals) {
+            LocalDate mealDate = meal.getDate();
+            if (!mealDate.isBefore(startDate) && !mealDate.isAfter(endDate)) {
+                for (MealItem item : meal.getItems()) {
+                    int foodId = nutritionDAO.getFoodIdByName(item.getIngredient());
+                    if (foodId != -1) {
+                        Map<String, Double> nutrients = nutritionDAO.getFoodNutrients(foodId);
+                        double factor = item.getQuantity() / 100.0;
+                        for (Map.Entry<String, Double> entry : nutrients.entrySet()) {
+                            totals.put(entry.getKey(),
+                                    totals.getOrDefault(entry.getKey(), 0.0) + (entry.getValue() * factor));
+                        }
+                    }
+                }
+            }
+        }
+        return totals;
+    }
+
     /**
      * For Bar Chart: Compare Before vs After by splitting meals in range.
      * @param userId User ID
@@ -33,7 +56,7 @@ public class VisualizationController {
                                                                  LocalDate startDate, LocalDate endDate) {
         List<Meal> meals = mealDAO.getMealsByUserId(userId).stream()
                 .filter(m -> !m.getDate().isBefore(startDate) && !m.getDate().isAfter(endDate))
-                .sorted(Comparator.comparing(Meal::getDate)) // Oldest first
+                .sorted(Comparator.comparing(Meal::getDate))
                 .collect(Collectors.toList());
 
         Map<String, Double> beforeTotals = new HashMap<>();
@@ -68,8 +91,6 @@ public class VisualizationController {
         return trend;
     }
 
-    // Adds nutrient values for a meal to totals.
-     
     private void accumulateNutrients(Meal meal, Map<String, Double> totals, String nutrient) {
         for (MealItem item : meal.getItems()) {
             int foodId = nutritionDAO.getFoodIdByName(item.getIngredient());
@@ -89,8 +110,6 @@ public class VisualizationController {
         }
     }
 
-    // Calculates a nutrient's value for one meal.
-    
     private double calculateMealNutrient(Meal meal, String nutrient) {
         double total = 0.0;
         for (MealItem item : meal.getItems()) {
@@ -102,5 +121,107 @@ public class VisualizationController {
             }
         }
         return total;
+    }
+
+    public Map<String, Map<String, Double>> getBeforeAfterTotals(int userId, LocalDate startDate, LocalDate endDate, String foodToReplace, String replacementFood) {
+        Map<String, Double> before = getNutrientTotals(userId, startDate, endDate);
+        Map<String, Double> after = new HashMap<>(before);
+
+        List<Meal> meals = mealDAO.getMealsByUserId(userId);
+
+        int foodToReplaceId = nutritionDAO.getFoodIdByName(foodToReplace);
+        int replacementFoodId = nutritionDAO.getFoodIdByName(replacementFood);
+
+        if (foodToReplaceId == -1 || replacementFoodId == -1) {
+            return new HashMap<>();
+        }
+
+        Map<String, Double> foodToReplaceNutrients = nutritionDAO.getFoodNutrients(foodToReplaceId);
+        Map<String, Double> replacementFoodNutrients = nutritionDAO.getFoodNutrients(replacementFoodId);
+
+        for (Meal meal : meals) {
+            LocalDate mealDate = meal.getDate();
+            if (!mealDate.isBefore(startDate) && !mealDate.isAfter(endDate)) {
+                for (MealItem item : meal.getItems()) {
+                    if (item.getIngredient().equalsIgnoreCase(foodToReplace)) {
+                        double factor = item.getQuantity() / 100.0;
+                        for (Map.Entry<String, Double> entry : foodToReplaceNutrients.entrySet()) {
+                            after.put(entry.getKey(), after.get(entry.getKey()) - (entry.getValue() * factor));
+                        }
+                        for (Map.Entry<String, Double> entry : replacementFoodNutrients.entrySet()) {
+                            after.put(entry.getKey(), after.getOrDefault(entry.getKey(), 0.0) + (entry.getValue() * factor));
+                        }
+                    }
+                }
+            }
+        }
+
+        Map<String, Map<String, Double>> result = new HashMap<>();
+        result.put("before", before);
+        result.put("after", after);
+        return result;
+    }
+
+    public int applySwapToDateRange(int userId, LocalDate startDate, LocalDate endDate, String oldIngredient, String newIngredient) {
+        return MealDAO.applySwapToMealsInDateRange(userId, startDate, endDate, oldIngredient, newIngredient);
+    }
+
+    public int applySwapToAllMeals(int userId, String oldIngredient, String newIngredient) {
+        return MealDAO.applySwapToAllMeals(userId, oldIngredient, newIngredient);
+    }
+
+    public Map<String, List<Double>> getNutrientTrendsPerMeal(int userId, LocalDate startDate, LocalDate endDate, List<String> nutrients) {
+        List<Meal> meals = mealDAO.getMealsByUserId(userId);
+        Map<String, List<Double>> trends = new HashMap<>();
+        
+        for (String nutrient : nutrients) {
+            trends.put(nutrient, new ArrayList<>());
+        }
+
+        for (Meal meal : meals) {
+            LocalDate mealDate = meal.getDate();
+            if (!mealDate.isBefore(startDate) && !mealDate.isAfter(endDate)) {
+                Map<String, Double> mealNutrients = new HashMap<>();
+                
+                for (MealItem item : meal.getItems()) {
+                    int foodId = nutritionDAO.getFoodIdByName(item.getIngredient());
+                    if (foodId != -1) {
+                        Map<String, Double> itemNutrients = nutritionDAO.getFoodNutrients(foodId);
+                        double factor = item.getQuantity() / 100.0;
+                        
+                        for (Map.Entry<String, Double> entry : itemNutrients.entrySet()) {
+                            mealNutrients.put(entry.getKey(),
+                                    mealNutrients.getOrDefault(entry.getKey(), 0.0) + (entry.getValue() * factor));
+                        }
+                    }
+                }
+                
+                for (String nutrient : nutrients) {
+                    trends.get(nutrient).add(mealNutrients.getOrDefault(nutrient, 0.0));
+                }
+            }
+        }
+        
+        return trends;
+    }
+
+    public Map<String, Double> getAverageNutrients(int userId, LocalDate startDate, LocalDate endDate) {
+        Map<String, Double> totals = getNutrientTotals(userId, startDate, endDate);
+        List<Meal> meals = mealDAO.getMealsByUserId(userId);
+        
+        long mealCount = meals.stream()
+                .filter(meal -> !meal.getDate().isBefore(startDate) && !meal.getDate().isAfter(endDate))
+                .count();
+        
+        if (mealCount == 0) {
+            return new HashMap<>();
+        }
+        
+        Map<String, Double> averages = new HashMap<>();
+        for (Map.Entry<String, Double> entry : totals.entrySet()) {
+            averages.put(entry.getKey(), entry.getValue() / mealCount);
+        }
+        
+        return averages;
     }
 }
