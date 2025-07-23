@@ -149,3 +149,4 @@ public class VisualizeSwapPanel extends Base {
             JOptionPane.showMessageDialog(this, "Error generating chart: " + ex.getMessage());
         }
     }
+}

@@ -11,8 +11,16 @@ public class SwapController {
         this.swapEngine = new SmartSwapEngine();
     }
 
-    public List<FoodSwap> getSwapSuggestions(int userId, NutritionalGoal goal) {
+    public List<FoodSwap> getSwapSuggestionsForMeal(Meal meal, List<NutritionalGoal> goals) {
+        return swapEngine.suggestSwapsForMeal(meal, goals);
+    }
+
+    public List<FoodSwap> getSwapSuggestionsForUser(int userId, List<NutritionalGoal> goals) {
         List<Meal> allMeals = MealDAO.getMealsByUserId(userId);
-        return swapEngine.suggestSwaps(allMeals, List.of(goal));
+        List<FoodSwap> allSuggestions = new ArrayList<>();
+        for (Meal meal : allMeals) {
+            allSuggestions.addAll(swapEngine.suggestSwapsForMeal(meal, goals));
+        }
+        return allSuggestions;
     }
 }

@@ -1,39 +1,36 @@
 package nutrisci.model;
 
-import java.io.Serializable;
+public class NutritionalGoal {
+    private final String nutrientName;
+    private final double amount;
+    private final boolean increase;
+    private final String unit; // e.g., "g" or "%"
 
-public class NutritionalGoal implements Serializable {
-    private String nutrientName;
-    private double targetChange;
-    private boolean isIncrease;
-
-    public NutritionalGoal(String nutrientName, double targetChange, boolean isIncrease) {
+    public NutritionalGoal(String nutrientName, double amount, boolean increase, String unit) {
         this.nutrientName = nutrientName;
-        this.targetChange = targetChange;
-        this.isIncrease = isIncrease;
+        this.amount = amount;
+        this.increase = increase;
+        this.unit = unit;
     }
 
-    public String getNutrientName() { return nutrientName; }
-    public double getTargetChange() { return targetChange; }
-    public boolean isIncrease() { return isIncrease; }
+    public String getNutrientName() {
+        return nutrientName;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public boolean isIncrease() {
+        return increase;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
 
     public String getDescription() {
-        return (isIncrease ? "Increase " : "Decrease ") + nutrientName + " by " + targetChange;
-    }
-
-    public void setNutrientName(String nutrientName) {
-        this.nutrientName = nutrientName;
-    }
-
-    public void setTargetChange(double targetChange) {
-        this.targetChange = targetChange;
-    }
-
-    public boolean isIsIncrease() {
-        return isIncrease;
-    }
-
-    public void setIsIncrease(boolean isIncrease) {
-        this.isIncrease = isIncrease;
+        String direction = increase ? "increase" : "decrease";
+        return String.format("%s %s by at least %.1f%s", direction, nutrientName.toLowerCase(), amount, unit);
     }
 }

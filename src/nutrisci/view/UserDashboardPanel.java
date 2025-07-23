@@ -22,7 +22,7 @@ public class UserDashboardPanel extends Base {
         Image bin_image = new ImageIcon("src/recycle-bin.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image edit_image = new ImageIcon("src/edit.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image dish_image = new ImageIcon("src/dish.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-        Image ng_image = new ImageIcon("src/health.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        Image ng_image = new ImageIcon("src/goal.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image chart_image = new ImageIcon("src/viz_chart.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH); //// need image icon
         
         ImageIcon binIcon = new ImageIcon(bin_image);
@@ -57,7 +57,7 @@ public class UserDashboardPanel extends Base {
         JButton dietBtn = createSquareButton("View Diet", dishIcon, new Color(200, 255, 200));
         JButton deleteBtn = createSquareButton("Delete Profile", binIcon, new Color(255, 210, 210));
         JButton nutrigoalBtn = createSquareButton("Nutritional goal", ngIcon, new Color(210, 255, 255));
-        JButton visualizeBtn = createSquareButton("Visualize Swaps", chartIcon, new Color(220, 220, 255)); //// need viz.chart icon
+        JButton visualizeBtn = createSquareButton("Visualize Swaps", viz_chartIcon, new Color(220, 220, 255)); //// need viz.chart icon
 
 
         // Button Actions
@@ -92,21 +92,22 @@ public class UserDashboardPanel extends Base {
         });
 
         nutrigoalBtn.addActionListener(e -> {
-    System.out.println("Opening RequestSwapPanel...");
-            frame.setContentPane(new RequestSwapPanel(frame, profile));
+            frame.setContentPane(new SwapSuggestionPanel(frame, profile));
             frame.revalidate();
             frame.repaint();
         });
 
         visualizeBtn.addActionListener(e -> { //// 
-        frame.setContentPane(new VisualizeSwapPanel(frame, profile)); //// 
+        /**frame.setContentPane(new VisualizeSwapPanel(frame, profile)); //// 
         frame.revalidate(); //// 
-        frame.repaint(); //// 
+        frame.repaint(); //// **/
         });
 
         buttonPanel.add(editBtn);
         buttonPanel.add(dietBtn);
+        buttonPanel.add(nutrigoalBtn);
         buttonPanel.add(deleteBtn);
+        buttonPanel.add(visualizeBtn); ////
 
         add(buttonPanel, BorderLayout.CENTER);
     }
