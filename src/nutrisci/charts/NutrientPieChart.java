@@ -17,7 +17,7 @@ public class NutrientPieChart extends JFrame {
         super(title);
         
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeel());
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -124,15 +124,13 @@ public class NutrientPieChart extends JFrame {
         plot.setLabelPaint(Color.WHITE);
         plot.setLabelBackgroundPaint(new Color(52, 73, 94, 180));
         plot.setLabelOutlinePaint(Color.WHITE);
-        plot.setLabelShadowPaint(null);
+        // plot.setLabelShadowPaint(null);
         plot.setLabelPadding(new org.jfree.ui.RectangleInsets(5, 5, 5, 5));
 
         if (chart.getLegend() != null) {
             chart.getLegend().setItemFont(new Font("Segoe UI", Font.PLAIN, 12));
             chart.getLegend().setBackgroundPaint(new Color(250, 250, 250));
-            chart.getLegend().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         }
-        plot.setSectionDepth(0.35);
         plot.setStartAngle(45);
         plot.setDirection(org.jfree.util.Rotation.CLOCKWISE);
     }
