@@ -10,7 +10,7 @@ NutriSci helps users track meals, analyze nutrients, and make smarter dietary ch
 - Visualize dietary trends and CFG compliance
 
 ## Setup
-- Clone repo
+- Clone repo: git clone https://github.com/clclsy/lima.git
 - Install dependencies: Java 17, MySQL, JFreeChart
 - Configure database with provided CNF dataset
 
