@@ -97,7 +97,7 @@ public class DietDashboardPanel extends Base {
         chartGrid.setBackground(Styles.background);
 
         chartGrid.add(ChartPanel.createPlaceholder("Daily Calories per Meal"));
-        chartGrid.add(ChartPanel.createPlaceholder("Top 5 Nutrients Intake"));
+        chartGrid.add(new NutrientIntakeChartComponent(profile));
         chartGrid.add(ChartPanel.createPlaceholder("Swap Effects (Before vs After)"));
         chartGrid.add(ChartPanel.createPlaceholder("Meal Comparison: Original vs Swapped"));
         chartGrid.add(ChartPanel.createPlaceholder("Canada Food Guide Alignment"));

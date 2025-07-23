@@ -19,7 +19,7 @@ public class MealDAO {
         String sqlItem = "INSERT INTO meal_items(meal_id, ingredient, quantity) VALUES (?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-             PreparedStatement mealStmt = conn.prepareStatement(sqlMeal, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement mealStmt = conn.prepareStatement(sqlMeal, Statement.RETURN_GENERATED_KEYS)) {
 
             mealStmt.setInt(1, userId);
             mealStmt.setDate(2, Date.valueOf(meal.getDate()));
@@ -48,16 +48,16 @@ public class MealDAO {
     @SuppressWarnings("CallToPrintStackTrace")
     public static List<Meal> getMealsByUserId(int userId) {
         String sql = """
-            SELECT m.id, m.meal_date, m.meal_type, i.ingredient, i.quantity
-            FROM meals m
-            LEFT JOIN meal_items i ON m.id = i.meal_id
-            WHERE m.user_id = ?
-            ORDER BY m.meal_date DESC
-        """;
+                    SELECT m.id, m.meal_date, m.meal_type, i.ingredient, i.quantity
+                    FROM meals m
+                    LEFT JOIN meal_items i ON m.id = i.meal_id
+                    WHERE m.user_id = ?
+                    ORDER BY m.meal_date DESC
+                """;
 
         List<Meal> meals = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
@@ -80,8 +80,7 @@ public class MealDAO {
                 if (ingredient != null) {
                     MealItem item = new MealItem(
                             ingredient,
-                            rs.getDouble("quantity")
-                    );
+                            rs.getDouble("quantity"));
                     meal.getItems().add(item);
                 }
             }
@@ -91,6 +90,43 @@ public class MealDAO {
         }
 
         return meals;
+    }
+
+    public static Map<LocalDate, Map<String, Double>> getDailyNutrientAverages(int userId) {
+        Map<LocalDate, Map<String, Double>> result = new TreeMap<>();
+
+        String sql = """
+                    SELECT m.meal_date, n.name_en AS nutrient, SUM(nd.nutrient_value) AS total
+                    FROM meals m
+                    JOIN meal_items mi ON m.id = mi.meal_id
+                    JOIN foods f ON LOWER(f.name_en) = LOWER(mi.ingredient)
+                    JOIN nutrientdata nd ON nd.food_id = f.food_id
+                    JOIN nutrients n ON nd.nutrient_id = n.nutrient_id
+                    WHERE m.user_id = ?
+                    AND n.name_en IN ('Protein', 'Carbohydrate, total', 'Fat, total', 'Energy')
+                    GROUP BY m.meal_date, n.name_en
+                    ORDER BY m.meal_date ASC
+                """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                LocalDate date = rs.getDate("meal_date").toLocalDate();
+                String nutrient = rs.getString("nutrient");
+                double value = rs.getDouble("total");
+
+                result.computeIfAbsent(date, d -> new HashMap<>()).put(nutrient, value);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
 }
