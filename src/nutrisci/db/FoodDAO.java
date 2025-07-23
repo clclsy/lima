@@ -11,22 +11,13 @@ public class FoodDAO {
     private static final String DB_PASS = DBConnectionHelper.get("DB_PASSWORD");
 
     public static Integer getFoodIdByName(String foodName) {
-        String exactSql = "SELECT food_id FROM FoodDescriptions WHERE LOWER(description_en) = LOWER(?)";
-        String startsWithSql = "SELECT food_id FROM FoodDescriptions WHERE LOWER(description_en) LIKE LOWER(?) LIMIT 1";
+        String sql = "SELECT food_id FROM FoodDescriptions WHERE LOWER(description_en) LIKE LOWER(?) LIMIT 1";
+
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-                PreparedStatement exactStmt = conn.prepareStatement(exactSql);
-                PreparedStatement startsWithStmt = conn.prepareStatement(startsWithSql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Try exact match first
-            exactStmt.setString(1, foodName);
-            ResultSet rs = exactStmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("food_id");
-            }
-
-            // Try "starts with" match if exact fails
-            startsWithStmt.setString(1, foodName + "%");
-            rs = startsWithStmt.executeQuery();
+            stmt.setString(1, "%" + foodName + "%");
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("food_id");
             }
@@ -35,16 +26,16 @@ public class FoodDAO {
             e.printStackTrace();
         }
 
-        System.out.println("No match found for: " + foodName);
         return null;
     }
+
 
     public static String findSwapCandidate(int originalFoodId, NutritionalGoal goal) {
         String nutrientKey = switch (goal.getNutrientName().toLowerCase()) {
             case "calories" -> "Energy";
-            case "fat" -> "Fat, total";
-            case "fiber" -> "Fibre, total dietary";
-            case "carbs", "carbohydrates" -> "Carbohydrate, total";
+            case "fat" -> "Fats";
+            case "fiber" -> "Fiber";
+            case "carbs", "carbohydrates" -> "Carbohydrates";
             case "protein" -> "Protein";
             default -> goal.getNutrientName();
         };
@@ -62,7 +53,7 @@ public class FoodDAO {
                     AND fd.food_id != ?
                     ORDER BY
                         CASE WHEN ? THEN nd.nutrient_value ELSE -nd.nutrient_value END DESC
-                    LIMIT 50
+                    LIMIT 100
                 """;
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
@@ -78,22 +69,71 @@ public class FoodDAO {
             double originalTarget = orig.getOrDefault(nutrientKey, 0.0);
             double originalCalories = orig.getOrDefault("Energy", 0.0);
 
+            String fallback = null;
+
             while (rs.next()) {
                 String candidate = rs.getString("description_en");
                 double targetValue = rs.getDouble("target_value");
                 double calories = rs.getDouble("calories");
 
-                // Relax the calorie constraint to 20% and ensure it's not zero
-                boolean caloriesOk = originalCalories <= 0 ||
-                        Math.abs(calories - originalCalories) / originalCalories <= 0.20;
-
-                // Check if it improves the target nutrient
                 boolean improves = goal.isIncrease() ? targetValue > originalTarget : targetValue < originalTarget;
 
-                if (caloriesOk && improves) {
+                if (!improves)
+                    continue;
+
+                // Relax calorie constraint to 30%
+                boolean caloriesOk = originalCalories <= 0 ||
+                        Math.abs(calories - originalCalories) / originalCalories <= 0.30;
+
+                if (caloriesOk)
                     return candidate;
-                }
+
+                if (fallback == null)
+                    fallback = candidate; // Save as backup
             }
+
+            return (fallback != null) ? fallback : "No better match found";
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error finding swap";
+        }
+    }
+
+    public static String findSwapCandidateRelaxed(int originalFoodId, String nutrientName, boolean increase,
+            double currentValue) {
+        String sql = """
+                    SELECT f.name_en, nd.nutrient_value
+                    FROM Foods f
+                    JOIN NutrientData nd ON f.food_id = nd.food_id
+                    WHERE f.food_group_id = (
+                        SELECT food_group_id FROM Foods WHERE food_id = ?
+                    )
+                    AND nd.nutrient_id = (
+                        SELECT nutrient_id FROM Nutrients WHERE name_en = ?
+                    )
+                    LIMIT 50
+                """;
+
+        try (Connection conn = DriverManager.getConnection(
+                DBConnectionHelper.get("DB_URL"),
+                DBConnectionHelper.get("DB_USER"),
+                DBConnectionHelper.get("DB_PASSWORD"));
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, originalFoodId);
+            stmt.setString(2, nutrientName);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String candidate = rs.getString("name_en");
+                double value = rs.getDouble("nutrient_value");
+
+                boolean improves = increase ? value > currentValue : value < currentValue;
+                if (improves)
+                    return candidate;
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

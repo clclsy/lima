@@ -1,3 +1,7 @@
 run in terminal : 
 javac -d bin -cp "lib/*" src\nutrisci\model\*.java src\nutrisci\view\*.java src\nutrisci\template\*.java src\nutrisci\db\*.java src\nutrisci\controller\*.java src/nutrisci/MainApp.java
 java -cp "bin;src\lib\*" nutrisci.MainApp
+
+
+javac -d bin -cp "src/lib/jfreechart-1.0.19.jar;src/lib/jcommon-1.0.23.jar;src/lib/mysql-connector-j-9.3.0.jar" src/nutrisci/model/*.java src/nutrisci/view/*.java src/nutrisci/template/*.java src/nutrisci/db/*.java src/nutrisci/controller/*.java src/nutrisci/charts/*.java src/nutrisci/MainApp.java
+java -cp "bin;src/lib/jfreechart-1.0.19.jar;src/lib/jcommon-1.0.23.jar;src/lib/mysql-connector-j-9.3.0.jar" nutrisci.MainApp

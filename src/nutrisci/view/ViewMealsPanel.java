@@ -155,6 +155,7 @@ public class ViewMealsPanel extends Base {
         final LocalDate start = parsedStart;
         final LocalDate end = parsedEnd;
         int userId = profile.getId();
+
         List<Meal> allMeals = MealDAO.getMealsByUserId(userId);
         List<Meal> filtered = allMeals.stream()
                 .filter(m -> {

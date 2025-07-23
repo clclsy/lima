@@ -64,11 +64,12 @@ public class UserProfileDAO {
             while (rs.next()) {
                 UserProfile p = new UserProfile(
                         rs.getString("name"),
-                        rs.getDate("dob").toLocalDate(), // Convert SQL Date to LocalDate
+                        rs.getDate("dob").toLocalDate(),
                         rs.getString("gender"),
                         rs.getDouble("height"),
                         rs.getDouble("weight"),
                         rs.getString("unit"));
+                        p.setId(rs.getInt("id"));
                 profiles.add(p);
             }
 

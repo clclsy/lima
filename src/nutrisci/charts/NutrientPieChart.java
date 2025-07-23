@@ -6,7 +6,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.general.DefaultPieDataset;
-
+import org.jfree.chart.block.BlockBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class NutrientPieChart extends JFrame {
         super(title);
         
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeel());
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,9 +130,9 @@ public class NutrientPieChart extends JFrame {
         if (chart.getLegend() != null) {
             chart.getLegend().setItemFont(new Font("Segoe UI", Font.PLAIN, 12));
             chart.getLegend().setBackgroundPaint(new Color(250, 250, 250));
-            chart.getLegend().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            chart.getLegend().setFrame(new BlockBorder(Color.WHITE)); 
         }
-        plot.setSectionDepth(0.35);
+        //plot.setSectionDepth(0.35);
         plot.setStartAngle(45);
         plot.setDirection(org.jfree.util.Rotation.CLOCKWISE);
     }

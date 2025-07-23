@@ -48,7 +48,7 @@ public class MealDAO {
     @SuppressWarnings("CallToPrintStackTrace")
     public static List<Meal> getMealsByUserId(int userId) {
         String sql = """
-                    SELECT m.id, m.meal_date, m.meal_type, i.ingredient, i.quantity
+                    SELECT m.id, m.user_id, m.meal_date, m.meal_type, i.ingredient, i.quantity
                     FROM meals m
                     LEFT JOIN meal_items i ON m.id = i.meal_id
                     WHERE m.user_id = ?
@@ -58,7 +58,7 @@ public class MealDAO {
         List<Meal> meals = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
 
@@ -69,9 +69,10 @@ public class MealDAO {
                 Meal meal = mealMap.get(mealId);
 
                 if (meal == null) {
+                    int actualUserId = rs.getInt("user_id"); // ✅ pull from DB
                     LocalDate date = rs.getDate("meal_date").toLocalDate();
                     MealType type = MealType.valueOf(rs.getString("meal_type").toUpperCase());
-                    meal = new Meal(userId, date, type, new ArrayList<>());
+                    meal = new Meal(actualUserId, date, type, new ArrayList<>());
                     mealMap.put(mealId, meal);
                     meals.add(meal);
                 }
