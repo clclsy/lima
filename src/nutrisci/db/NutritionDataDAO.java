@@ -171,4 +171,24 @@ public class NutritionDataDAO {
             default -> nutrientName;
         };
     }
-} 
+
+    public int getFoodIdByName(String foodName) {
+        String sql = "SELECT food_id FROM FoodDescriptions WHERE description_en = ? LIMIT 1";
+        int foodId = -1; // Return -1 if not found
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, foodName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    foodId = rs.getInt("food_id");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching food ID for name " + foodName + ": " + e.getMessage());
+        }
+        return foodId;
+    }
+}
