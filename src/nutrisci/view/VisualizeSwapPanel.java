@@ -1,4 +1,4 @@
-package nutrisci.view;
+package nutrisci.view; 
 
 import nutrisci.charts.SwapEffectChart;
 import nutrisci.controller.VisualizationController;
