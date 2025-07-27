@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import nutrisci.model.MealItem;
 
@@ -314,104 +315,111 @@ public class FoodDAO {
     }
 
     public static String findSimpleSwap(int originalFoodId, String nutrientName, boolean increase) {
-    String nutrientKey = switch (nutrientName.toLowerCase()) {
-        case "calories" -> "Energy";
-        case "fat" -> "Fat, total";
-        case "fiber" -> "Fibre, total dietary";
-        case "carbs", "carbohydrates" -> "Carbohydrate, total";
-        case "protein" -> "Protein";
-        default -> nutrientName;
-    };
+        String nutrientKey = switch (nutrientName.toLowerCase()) {
+            case "calories" -> "Energy";
+            case "fat" -> "Fat, total";
+            case "fiber" -> "Fibre, total dietary";
+            case "carbs", "carbohydrates" -> "Carbohydrate, total";
+            case "protein" -> "Protein";
+            default -> nutrientName;
+        };
 
-    String operator = increase ? ">" : "<";
-    String order = increase ? "DESC" : "ASC";
+        String operator = increase ? ">" : "<";
+        String order = increase ? "DESC" : "ASC";
 
-    String sql = String.format("""
-        SELECT fd.food_id, fd.description_en
-        FROM fooddescriptions fd
-        JOIN nutrientdata nd ON fd.food_id = nd.food_id
-        WHERE nd.nutrient_id = (
-            SELECT nutrient_id FROM nutrients WHERE name_en = ?
-        )
-        AND fd.food_id != ?
-        AND fd.food_group_id = (
-            SELECT food_group_id FROM fooddescriptions WHERE food_id = ?
-        )
-        AND fd.description_en NOT REGEXP 'powder|gelatin|supplement|sweets|infant|baby|formula'
-        AND nd.nutrient_value %s (
-            SELECT nutrient_value FROM nutrientdata
-            WHERE food_id = ? AND nutrient_id = (
-                SELECT nutrient_id FROM nutrients WHERE name_en = ?
-            )
-        )
-        ORDER BY nd.nutrient_value %s
-        LIMIT 20
-        """, operator, order);
+        String sql = String.format("""
+                SELECT fd.food_id, fd.description_en
+                FROM fooddescriptions fd
+                JOIN nutrientdata nd ON fd.food_id = nd.food_id
+                WHERE nd.nutrient_id = (
+                    SELECT nutrient_id FROM nutrients WHERE name_en = ?
+                )
+                AND fd.food_id != ?
+                AND fd.food_group_id = (
+                    SELECT food_group_id FROM fooddescriptions WHERE food_id = ?
+                )
+                AND fd.description_en NOT REGEXP 'powder|gelatin|supplement|sweets|infant|baby|formula'
+                AND nd.nutrient_value %s (
+                    SELECT nutrient_value FROM nutrientdata
+                    WHERE food_id = ? AND nutrient_id = (
+                        SELECT nutrient_id FROM nutrients WHERE name_en = ?
+                    )
+                )
+                ORDER BY nd.nutrient_value %s
+                LIMIT 20
+                """, operator, order);
 
-    try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.setString(1, nutrientKey);
-        stmt.setInt(2, originalFoodId);
-        stmt.setInt(3, originalFoodId);
-        stmt.setInt(4, originalFoodId);
-        stmt.setString(5, nutrientKey);
+            stmt.setString(1, nutrientKey);
+            stmt.setInt(2, originalFoodId);
+            stmt.setInt(3, originalFoodId);
+            stmt.setInt(4, originalFoodId);
+            stmt.setString(5, nutrientKey);
 
-        ResultSet rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
 
-        Map<String, Double> originalNutrients = NutritionDataDAO.getInstance().getFoodNutrients(originalFoodId);
+            Map<String, Double> originalNutrients = NutritionDataDAO.getInstance().getFoodNutrients(originalFoodId);
 
-        while (rs.next()) {
-            int candidateId = rs.getInt("food_id");
-            String candidateName = rs.getString("description_en");
+            while (rs.next()) {
+                int candidateId = rs.getInt("food_id");
+                String candidateName = rs.getString("description_en");
 
-            Map<String, Double> candidateNutrients = NutritionDataDAO.getInstance().getFoodNutrients(candidateId);
+                Map<String, Double> candidateNutrients = NutritionDataDAO.getInstance().getFoodNutrients(candidateId);
 
-            if (candidateNutrients == null || candidateNutrients.isEmpty()) {
-                System.out.println("Skipped " + candidateName + ": no nutrient data");
-                continue;
-            }
-
-            Double origValue = originalNutrients.getOrDefault(nutrientKey, 0.0);
-            Double candidateValue = candidateNutrients.getOrDefault(nutrientKey, 0.0);
-            if (increase && candidateValue <= origValue) {
-                System.out.println("Skipped " + candidateName + ": does not increase " + nutrientKey);
-                continue;
-            }
-            if (!increase && candidateValue >= origValue) {
-                System.out.println("Skipped " + candidateName + ": does not decrease " + nutrientKey);
-                continue;
-            }
-
-            boolean similar = true;
-            for (Map.Entry<String, Double> entry : originalNutrients.entrySet()) {
-                String key = entry.getKey();
-                if (key.equalsIgnoreCase(nutrientKey)) continue;
-
-                double orig = entry.getValue();
-                double cand = candidateNutrients.getOrDefault(key, orig);
-
-                double delta = Math.abs(cand - orig) / (orig == 0 ? 1 : orig);
-                if (delta > 0.10) {
-                    similar = false;
-                    System.out.printf("Skipped %s: %s differs too much (%.2f vs %.2f)\n",
-                            candidateName, key, cand, orig);
-                    break;
+                if (candidateNutrients == null || candidateNutrients.isEmpty()) {
+                    System.out.println("Skipped " + candidateName + ": no nutrient data");
+                    continue;
                 }
+
+                Double origValue = originalNutrients.getOrDefault(nutrientKey, 0.0);
+                Double candidateValue = candidateNutrients.getOrDefault(nutrientKey, 0.0);
+                if (increase && candidateValue <= origValue) {
+                    System.out.println("Skipped " + candidateName + ": does not increase " + nutrientKey);
+                    continue;
+                }
+                if (!increase && candidateValue >= origValue) {
+                    System.out.println("Skipped " + candidateName + ": does not decrease " + nutrientKey);
+                    continue;
+                }
+
+                boolean similar = true;
+
+                Set<String> enforceStrictMatch = Set.of("Protein", "Fat, total", "Sodium", "Fibre, total dietary");
+
+                for (Map.Entry<String, Double> entry : originalNutrients.entrySet()) {
+                    String key = entry.getKey();
+                    if (key.equalsIgnoreCase(nutrientKey) || key.equalsIgnoreCase("Energy"))
+                        continue;
+
+                    if (!enforceStrictMatch.contains(key))
+                        continue;
+
+                    double orig = entry.getValue();
+                    double cand = candidateNutrients.getOrDefault(key, orig);
+                    double delta = Math.abs(cand - orig) / (orig == 0 ? 1 : orig);
+
+                    if (delta > 0.10) {
+                        similar = false;
+                        System.out.printf("Skipped %s: %s differs too much (%.2f vs %.2f)\n",
+                                candidateName, key, cand, orig);
+                        break;
+                    }
+                }
+
+                if (!similar)
+                    continue;
+
+                System.out.println("Found swap: " + candidateName);
+                return candidateName;
             }
 
-            if (!similar) continue;
-
-            System.out.println("Found swap: " + candidateName);
-            return candidateName;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return null;
     }
-
-    return null;
-}
-
 
 }

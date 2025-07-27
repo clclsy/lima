@@ -249,10 +249,7 @@ public class SwapSuggestionPanel extends Base {
                 // Add more debug info as needed
             }
 
-            summary.append("\nTry these tips:\n");
-            summary.append("- Use more specific food names (e.g., 'skinless chicken breast')\n");
-            summary.append("- Increase the allowed calorie variance in settings\n");
-            summary.append("- Try with just one nutrient goal at a time\n");
+            summary.append("\nPlease try adjusting your goals or meal selection.");
         } else {
             suggestions.forEach(swap -> appendSwapDetails(summary, swap));
             appendNutritionalComparison(summary, selectedMeal, suggestions);
