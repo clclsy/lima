@@ -4,13 +4,12 @@ import java.awt.*;
 import javax.swing.*;
 import nutrisci.model.UserProfile;
 import nutrisci.template.Base;
-import nutrisci.template.ChartPanel;
 import nutrisci.template.DatePicker;
 import nutrisci.template.Styles;
 
-public class DietDashboardPanel extends Base {
+public class cnfsuggestions extends Base {
 
-    public DietDashboardPanel(JFrame frame, UserProfile profile) {
+    public cnfsuggestions(JFrame frame, UserProfile profile) {
         super(frame);
         init(frame, profile);
     }
@@ -27,7 +26,7 @@ public class DietDashboardPanel extends Base {
         top.add(createTopPanel(new UserDashboardPanel(frame, profile)), BorderLayout.WEST);
 
         // Greeting title
-        JLabel greeting = new JLabel(profile.getName() + "'s Diet Dashboard");
+        JLabel greeting = new JLabel("CNF Suggestions for " + profile.getName());
         greeting.setFont(Styles.dtitle_font);
         greeting.setHorizontalAlignment(SwingConstants.CENTER);
         greeting.setBorder(BorderFactory.createEmptyBorder(60, 0, 10, 0));
@@ -64,9 +63,7 @@ public class DietDashboardPanel extends Base {
         chartGrid.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         chartGrid.setBackground(Styles.background);
 
-        chartGrid.add(ChartPanel.createPlaceholder("Swap Effects (Before vs After)"));
-        chartGrid.add(ChartPanel.createPlaceholder("Meal Comparison: Original vs Swapped"));
-        chartGrid.add(new AveragePlateChartComponent(profile));
+        contentPanel.add(new AveragePlateChartComponent(profile));
 
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(chartGrid);

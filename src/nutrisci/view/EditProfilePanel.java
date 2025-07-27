@@ -54,7 +54,7 @@ public class EditProfilePanel extends Base {
 
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Profile updated successfully!");
-                    frame.setContentPane(new UserSelectPanel(frame));
+                    frame.setContentPane(new UserDashboardPanel(frame, profile));
                     frame.revalidate();
                     frame.repaint();
                 } else {

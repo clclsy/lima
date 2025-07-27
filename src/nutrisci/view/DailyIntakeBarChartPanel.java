@@ -8,23 +8,22 @@ import nutrisci.model.MealItem;
 import nutrisci.model.UserProfile;
 import nutrisci.template.Styles;
 import nutrisci.template.DatePicker;
+import nutrisci.template.Base;
 import org.jfree.chart.*;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
-
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.*;
 
-public class DailyIntakeBarChartPanel extends JPanel {
+public class DailyIntakeBarChartPanel extends Base {
     private final UserProfile profile;
     private final DatePicker datePicker;
     private final JPanel chartContainer;
@@ -40,35 +39,42 @@ public class DailyIntakeBarChartPanel extends JPanel {
             "Vitamin A", 900.0,
             "Calories", 2000.0);
 
-    public DailyIntakeBarChartPanel(UserProfile profile) {
+    public DailyIntakeBarChartPanel(JFrame frame, UserProfile profile) {
+        super(frame);
         this.profile = profile;
-        this.setLayout(new BorderLayout());
-        this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Title
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Top section with back button
+        JPanel top = new JPanel(new BorderLayout());
+        top.setOpaque(false);
+        top.add(createTopPanel(new UserDashboardPanel(frame, profile)), BorderLayout.WEST);
+
         JLabel title = new JLabel("Compare Your Nutrient Intake to RDVs", JLabel.CENTER);
-        title.setFont(Styles.default_font);
-        this.add(title, BorderLayout.NORTH);
+        title.setFont(Styles.dtitle_font);
+        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        top.add(title, BorderLayout.CENTER);
 
-        // Top panel with date picker and button
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        add(top, BorderLayout.NORTH);
+
+        // Date picker and generate button
+        JPanel controls = new JPanel(new FlowLayout(FlowLayout.CENTER));
         datePicker = new DatePicker();
         JButton generateBtn = new JButton("Generate Chart");
-
         generateBtn.addActionListener(e -> updateChart());
 
-        topPanel.add(datePicker);
-        topPanel.add(generateBtn);
-        this.add(topPanel, BorderLayout.SOUTH);
+        controls.add(datePicker);
+        controls.add(generateBtn);
+        add(controls, BorderLayout.SOUTH);
 
-        // Placeholder chart container
+        // Chart container
         chartContainer = new JPanel(new BorderLayout());
         chartContainer.setBackground(Color.WHITE);
-        this.add(chartContainer, BorderLayout.CENTER);
+        add(chartContainer, BorderLayout.CENTER);
 
-        // Render initial chart
-        updateChart();
+        updateChart(); // render chart initially
     }
 
     private void updateChart() {

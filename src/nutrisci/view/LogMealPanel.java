@@ -139,7 +139,7 @@ public class LogMealPanel extends Base {
         JOptionPane.showMessageDialog(this, "Meal logged successfully.");
 
         // Switch to User Dashboard
-        DietDashboardPanel diet = new DietDashboardPanel(frame, profile);
+        UserDashboardPanel diet = new UserDashboardPanel(frame, profile);
         frame.setContentPane(diet);
         frame.revalidate();
         frame.repaint();

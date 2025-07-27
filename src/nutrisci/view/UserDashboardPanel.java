@@ -59,7 +59,7 @@ public class UserDashboardPanel extends Base {
         buttonPanel.setBackground(Styles.background);
 
         JButton editBtn = createSquareButton("Edit Profile", editIcon, new Color(255, 234, 200));
-        JButton dietBtn = createSquareButton("View Diet", dishIcon, new Color(200, 255, 200));
+        JButton dietBtn = createSquareButton("View CNF Suggestion", dishIcon, new Color(200, 255, 200));
         JButton deleteBtn = createSquareButton("Delete Profile", binIcon, new Color(255, 210, 210));
         JButton nutrigoalBtn = createSquareButton("Nutritional goal", ngIcon, new Color(210, 255, 255));
         JButton logmealBtn = createSquareButton("Log Meal", logIcon, new Color(250, 220, 220));
@@ -79,7 +79,7 @@ public class UserDashboardPanel extends Base {
         });
 
         dietBtn.addActionListener(e -> {
-            frame.setContentPane(new DietDashboardPanel(frame, profile));
+            frame.setContentPane(new cnfsuggestions(frame, profile));
             frame.revalidate();
             frame.repaint();
         });
@@ -122,7 +122,7 @@ public class UserDashboardPanel extends Base {
         
 
         compBtn.addActionListener(e -> {
-            frame.setContentPane(new DailyIntakeBarChartPanel(profile));
+            frame.setContentPane(new DailyIntakeBarChartPanel(frame,profile));
             frame.revalidate();
             frame.repaint();
         });
@@ -141,12 +141,12 @@ public class UserDashboardPanel extends Base {
 
         buttonPanel.add(editBtn);
         buttonPanel.add(logmealBtn);
-        buttonPanel.add(dietBtn);
-        buttonPanel.add(nutrigoalBtn);
-        buttonPanel.add(compBtn);
         buttonPanel.add(viewmealBtn);
-        buttonPanel.add(visualizeBtn);
+        buttonPanel.add(nutrigoalBtn);
         buttonPanel.add(applySwapBtn);
+        buttonPanel.add(visualizeBtn);
+        buttonPanel.add(dietBtn);
+        buttonPanel.add(compBtn);
         buttonPanel.add(deleteBtn); 
 
         add(buttonPanel, BorderLayout.CENTER);
