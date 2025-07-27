@@ -42,6 +42,12 @@ public class SmartSwapEngine {
                 }
             }
         }
+        System.out.println("Swap suggestions for meal: " + meal.getDate() + " - " + meal.getType());
+        for (FoodSwap swap : swaps) {
+            System.out.printf("✅ Replace '%s' with '%s' (%s)%n",
+                    swap.getOriginal(), swap.getReplacement(), swap.getRationale());
+        }
+
         return swaps;
     }
 
@@ -62,13 +68,14 @@ public class SmartSwapEngine {
     }
 
     private String normalizeNutrientKey(String input) {
-        return switch (input.toLowerCase()) {
-            case "calories" -> "Energy";
-            case "fat" -> "Fat, total";
-            case "fiber" -> "Fibre, total dietary";
-            case "carbs", "carbohydrates" -> "Carbohydrate, total";
-            case "protein" -> "Protein";
-            default -> input;
-        };
-    }
+    return switch (input.toLowerCase()) {
+        case "calories", "kcal" -> "Energy";
+        case "fat", "fats", "lipids" -> "Fat, total";
+        case "fiber", "fibre" -> "Fibre, total dietary";
+        case "carbs", "carbohydrates" -> "Carbohydrate, total";
+        case "protein" -> "Protein";
+        default -> input;
+    };
+}
+
 }

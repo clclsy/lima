@@ -1,15 +1,15 @@
 package nutrisci.view; 
 
+import java.awt.*;
+import java.time.LocalDate;
+import java.util.Map;
+import javax.swing.*;
 import nutrisci.charts.SwapEffectChart;
 import nutrisci.controller.VisualizationController;
 import nutrisci.model.UserProfile;
 import nutrisci.template.Base;
 import nutrisci.template.DatePicker;
 import nutrisci.template.Styles;
-import javax.swing.*;
-import java.awt.*;
-import java.time.LocalDate;
-import java.util.Map;
 
 //VisualizeSwapPanel
  //Displays two independent visualization sections:
@@ -129,8 +129,8 @@ public class VisualizeSwapPanel extends Base {
 
     private void renderBarChart() {
         try {
-            LocalDate startDate = barStartPicker.getDate();
-            LocalDate endDate = barEndPicker.getDate();
+            LocalDate startDate = LocalDate.parse(barStartPicker.getStartDate());
+            LocalDate endDate = LocalDate.parse(barEndPicker.getEndDate());
             String nutrient = (String) barNutrientCombo.getSelectedItem();
 
             Map<String, Map<String, Double>> data =
@@ -152,8 +152,8 @@ public class VisualizeSwapPanel extends Base {
 
     private void renderLineChart() {
         try {
-            LocalDate startDate = lineStartPicker.getDate();
-            LocalDate endDate = lineEndPicker.getDate();
+            LocalDate startDate = LocalDate.parse(lineStartPicker.getEndDate());
+            LocalDate endDate = LocalDate.parse(lineEndPicker.getEndDate());
             String nutrient = (String) lineNutrientCombo.getSelectedItem();
 
         // This check is important since "All" is not an option for the line chart

@@ -1,6 +1,9 @@
 package nutrisci.view;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Map;
 import javax.swing.*;
 import nutrisci.model.Meal;
 import nutrisci.model.MealItem;
@@ -32,7 +35,7 @@ public class MealCard extends JPanel {
             label.setFont(Styles.default_font);
             listPanel.add(label);
         }
-        
+
         double calories = 0.0;
         try {
             var nutrients = nutrisci.util.NutrientCalculator.calculateMealNutrients(meal);
@@ -47,5 +50,31 @@ public class MealCard extends JPanel {
         add(header);
         add(kcal);
         add(listPanel);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Map<String, Double> nutrients = nutrisci.util.NutrientCalculator.calculateMealNutrients(meal);
+                    StringBuilder sb = new StringBuilder();
+                    for (Map.Entry<String, Double> entry : nutrients.entrySet()) {
+                        sb.append(entry.getKey()).append(": ").append(String.format("%.2f", entry.getValue()))
+                                .append("\n");
+                    }
+
+                    JOptionPane.showMessageDialog(
+                            MealCard.this,
+                            sb.toString(),
+                            "Nutrient Breakdown",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            MealCard.this,
+                            "Could not calculate nutrients.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 }

@@ -23,13 +23,17 @@ public class UserDashboardPanel extends Base {
         Image edit_image = new ImageIcon("src/edit.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image dish_image = new ImageIcon("src/dish.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image ng_image = new ImageIcon("src/goal.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-        Image chart_image = new ImageIcon("src/viz_chart.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH); //// need image icon
+        Image log_image = new ImageIcon("src/notes.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        Image vm_image = new ImageIcon("src/menu.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        Image chart_image = new ImageIcon("src/bar-chart.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH); //// need image icon
         
         ImageIcon binIcon = new ImageIcon(bin_image);
         ImageIcon editIcon = new ImageIcon(edit_image);
         ImageIcon dishIcon = new ImageIcon(dish_image);
         ImageIcon ngIcon = new ImageIcon(ng_image);
-        ImageIcon viz_chartIcon = new ImageIcon(chart_image); //// 
+        ImageIcon logIcon = new ImageIcon(log_image);
+        ImageIcon vmIcon = new ImageIcon(vm_image);
+        ImageIcon viz_chartIcon = new ImageIcon(chart_image);
         
         // Top panel with back button and greeting centered
         JPanel top = new JPanel(new BorderLayout());
@@ -57,6 +61,8 @@ public class UserDashboardPanel extends Base {
         JButton dietBtn = createSquareButton("View Diet", dishIcon, new Color(200, 255, 200));
         JButton deleteBtn = createSquareButton("Delete Profile", binIcon, new Color(255, 210, 210));
         JButton nutrigoalBtn = createSquareButton("Nutritional goal", ngIcon, new Color(210, 255, 255));
+        JButton logmealBtn = createSquareButton("Log Meal", logIcon, new Color(250, 220, 220));
+        JButton viewmealBtn = createSquareButton("View Meals", vmIcon, new Color(220, 255, 220));
         JButton visualizeBtn = createSquareButton("Visualize Swaps", viz_chartIcon, new Color(220, 220, 255)); //// need viz.chart icon
 
 
@@ -97,17 +103,31 @@ public class UserDashboardPanel extends Base {
             frame.repaint();
         });
 
+        logmealBtn.addActionListener(e -> {
+            frame.setContentPane(new LogMealPanel(frame, profile));
+            frame.revalidate();
+            frame.repaint();
+        });
+
+        viewmealBtn.addActionListener(e -> {
+            frame.setContentPane(new ViewMealsPanel(frame, profile));
+            frame.revalidate();
+            frame.repaint();
+        });
+
         visualizeBtn.addActionListener(e -> { //// 
-        /**frame.setContentPane(new VisualizeSwapPanel(frame, profile)); //// 
+        frame.setContentPane(new VisualizeSwapPanel(frame, profile)); //// 
         frame.revalidate(); //// 
-        frame.repaint(); //// **/
+        frame.repaint(); ////
         });
 
         buttonPanel.add(editBtn);
+        buttonPanel.add(logmealBtn);
         buttonPanel.add(dietBtn);
         buttonPanel.add(nutrigoalBtn);
-        buttonPanel.add(deleteBtn);
-        buttonPanel.add(visualizeBtn); ////
+        buttonPanel.add(viewmealBtn);
+        buttonPanel.add(visualizeBtn);
+        buttonPanel.add(deleteBtn); 
 
         add(buttonPanel, BorderLayout.CENTER);
     }

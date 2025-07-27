@@ -311,7 +311,7 @@ public class SwapSuggestionPanel extends Base {
         for (MealItem item : meal.getItems()) {
             String foodName = replacements.getOrDefault(item.getIngredient(), item.getIngredient());
             FoodDAO foodDao = new FoodDAO();
-            Integer foodId = foodDao.getFoodIdByName(item.getIngredient());
+            Integer foodId = foodDao.getFoodIdByName(foodName);
 
             if (foodId != null) {
                 Map<String, Double> nutrients = nutritionDAO.getFoodNutrients(foodId);

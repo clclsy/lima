@@ -1,47 +1,45 @@
 package nutrisci.controller;
 
-import nutrisci.db.MealDAO;
-import nutrisci.db.NutritionDataDAO;
-import nutrisci.model.Meal;
-import nutrisci.model.MealItem;
-
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
- 
-//VisualizationController:
-//Handles UC8 logic for nutrient visualization:
- //Bar Chart: Compare Before vs After (splits meals in date range) | Line Chart: Nutrient trend over time
+import nutrisci.db.*;
+import nutrisci.model.Meal;
+import nutrisci.model.MealItem;
+
+/**
+ * VisualizationController handles UC8:
+ * - Bar Chart: Compare "before" vs "after" nutrients in a time range.
+ * - Line Chart: Nutrient trend over time.
+ */
 public class VisualizationController {
 
     private final MealDAO mealDAO;
     private final NutritionDataDAO nutritionDAO;
+    private final FoodDAO foodDAO;
 
     public VisualizationController() {
         this.mealDAO = new MealDAO();
         this.nutritionDAO = NutritionDataDAO.getInstance();
+        this.foodDAO = new FoodDAO();
     }
 
     /**
-     * For Bar Chart: Compare Before vs After by splitting meals in range.
-     * @param userId User ID
-     * @param nutrient Nutrient name ("All" for all nutrients)
-     * @param startDate Start of range
-     * @param endDate End of range
+     * Splits meals into "before" and "after" halves within a range, then totals nutrients.
      */
     public Map<String, Map<String, Double>> getBeforeAfterTotals(int userId, String nutrient,
                                                                  LocalDate startDate, LocalDate endDate) {
         List<Meal> meals = mealDAO.getMealsByUserId(userId).stream()
                 .filter(m -> !m.getDate().isBefore(startDate) && !m.getDate().isAfter(endDate))
-                .sorted(Comparator.comparing(Meal::getDate)) // Oldest first
+                .sorted(Comparator.comparing(Meal::getDate))
                 .collect(Collectors.toList());
 
         Map<String, Double> beforeTotals = new HashMap<>();
         Map<String, Double> afterTotals = new HashMap<>();
 
-        if (meals.size() == 0) return Map.of("before", beforeTotals, "after", afterTotals);
+        if (meals.isEmpty()) return Map.of("before", beforeTotals, "after", afterTotals);
 
-        int splitIndex = meals.size() / 2; // divide meals into two halves
+        int splitIndex = meals.size() / 2;
         List<Meal> beforeMeals = meals.subList(0, splitIndex);
         List<Meal> afterMeals = meals.subList(splitIndex, meals.size());
 
@@ -51,7 +49,9 @@ public class VisualizationController {
         return Map.of("before", beforeTotals, "after", afterTotals);
     }
 
-    // For Line Chart: Nutrient trend grouped by date.
+    /**
+     * Tracks nutrient totals per day (line chart view).
+     */
     public Map<String, Double> getTrendData(int userId, String nutrient,
                                             LocalDate startDate, LocalDate endDate) {
         List<Meal> meals = mealDAO.getMealsByUserId(userId).stream()
@@ -68,14 +68,14 @@ public class VisualizationController {
         return trend;
     }
 
-    // Adds nutrient values for a meal to totals.
-     
+    // Helper: Sums up nutrient values into totals.
     private void accumulateNutrients(Meal meal, Map<String, Double> totals, String nutrient) {
         for (MealItem item : meal.getItems()) {
-            int foodId = nutritionDAO.getFoodIdByName(item.getIngredient());
+            int foodId = foodDAO.getFoodIdByName(item.getIngredient());
             if (foodId != -1) {
                 Map<String, Double> nutrients = nutritionDAO.getFoodNutrients(foodId);
                 double factor = item.getQuantity() / 100.0;
+
                 if (nutrient.equalsIgnoreCase("All")) {
                     for (Map.Entry<String, Double> entry : nutrients.entrySet()) {
                         totals.put(entry.getKey(),
@@ -89,12 +89,11 @@ public class VisualizationController {
         }
     }
 
-    // Calculates a nutrient's value for one meal.
-    
+    // Helper: Calculates nutrient value for one meal.
     private double calculateMealNutrient(Meal meal, String nutrient) {
         double total = 0.0;
         for (MealItem item : meal.getItems()) {
-            int foodId = nutritionDAO.getFoodIdByName(item.getIngredient());
+            int foodId = foodDAO.getFoodIdByName(item.getIngredient());
             if (foodId != -1) {
                 Map<String, Double> nutrients = nutritionDAO.getFoodNutrients(foodId);
                 double factor = item.getQuantity() / 100.0;

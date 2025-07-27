@@ -165,11 +165,14 @@ public class NutritionDataDAO {
     public String simplifyNutrientName(String nutrientName) {
         return switch (nutrientName) {
             case "ENERGY (KILOCALORIES)" -> "Calories";
-            case "Carbohydrate, total" -> "Carbohydrates";
-            case "Fat, total" -> "Fats";
-            case "Fibre, total dietary" -> "Fiber";
-            case "Vitamin C" -> "Vitamin C";
-            case "Vitamin A" -> "Vitamin A";
+            case "Carbohydrate, total", "CARBOHYDRATE, TOTAL (BY DIFFERENCE)" -> "Carbohydrates";
+            case "Fat, total", "FAT (TOTAL LIPIDS)" -> "Fats";
+            case "FIBRE, TOTAL DIETARY" -> "Fiber";
+            case "VITAMIN C" -> "Vitamin C";
+            case "VITAMIN A" -> "Vitamin A";
+            case "PROTEIN" -> "Protein";
+            case "CALCIUM" -> "Calcium";
+            case "IRON" -> "Iron";
             default -> nutrientName;
         };
     }
