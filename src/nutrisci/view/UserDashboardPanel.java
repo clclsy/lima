@@ -1,14 +1,12 @@
 package nutrisci.view;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import javax.swing.*;
 import nutrisci.db.UserProfileDAO;
 import nutrisci.model.UserProfile;
 import nutrisci.template.Base;
 import nutrisci.template.Styles;
-import nutrisci.view.ApplySwapPanel;
-import java.awt.image.BufferedImage;
-import java.awt.RenderingHints;
 
 public class UserDashboardPanel extends Base {
 
@@ -29,7 +27,7 @@ public class UserDashboardPanel extends Base {
         Image log_image = new ImageIcon("src/notes.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image vm_image = new ImageIcon("src/menu.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         Image chart_image = new ImageIcon("src/bar-chart.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH); //// need image icon
-        
+        Image comp_image= new ImageIcon("src/ab-testing.png").getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH); //// need image icon
         ImageIcon binIcon = new ImageIcon(bin_image);
         ImageIcon editIcon = new ImageIcon(edit_image);
         ImageIcon dishIcon = new ImageIcon(dish_image);
@@ -37,7 +35,7 @@ public class UserDashboardPanel extends Base {
         ImageIcon logIcon = new ImageIcon(log_image);
         ImageIcon vmIcon = new ImageIcon(vm_image);
         ImageIcon viz_chartIcon = new ImageIcon(chart_image);
-        
+        ImageIcon compIcon = new ImageIcon(comp_image); //// need image icon
         // Top panel with back button and greeting centered
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Styles.background);
@@ -67,6 +65,7 @@ public class UserDashboardPanel extends Base {
         JButton logmealBtn = createSquareButton("Log Meal", logIcon, new Color(250, 220, 220));
         JButton viewmealBtn = createSquareButton("View Meals", vmIcon, new Color(220, 255, 220));
         JButton visualizeBtn = createSquareButton("Visualize Swaps", viz_chartIcon, new Color(220, 220, 255)); //// need viz.chart icon
+        JButton compBtn = createSquareButton("Compare Nutrients to RDV", compIcon, new Color(222,210,250)); //// need compare icon
         Image swap_image = createSwapIcon();
         ImageIcon swapIcon = new ImageIcon(swap_image);
         JButton applySwapBtn = createSquareButton("Apply Swap", swapIcon, new Color(220, 255, 255));
@@ -120,6 +119,13 @@ public class UserDashboardPanel extends Base {
             frame.revalidate();
             frame.repaint();
         });
+        
+
+        compBtn.addActionListener(e -> {
+            frame.setContentPane(new DailyIntakeBarChartPanel(profile));
+            frame.revalidate();
+            frame.repaint();
+        });
 
         visualizeBtn.addActionListener(e -> { //// 
         frame.setContentPane(new VisualizeSwapPanel(frame, profile)); //// 
@@ -137,6 +143,7 @@ public class UserDashboardPanel extends Base {
         buttonPanel.add(logmealBtn);
         buttonPanel.add(dietBtn);
         buttonPanel.add(nutrigoalBtn);
+        buttonPanel.add(compBtn);
         buttonPanel.add(viewmealBtn);
         buttonPanel.add(visualizeBtn);
         buttonPanel.add(applySwapBtn);

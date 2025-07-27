@@ -2,12 +2,11 @@ package nutrisci.view;
 
 import java.awt.*;
 import javax.swing.*;
-import nutrisci.model.MealType;
 import nutrisci.model.UserProfile;
 import nutrisci.template.Base;
 import nutrisci.template.ChartPanel;
+import nutrisci.template.DatePicker;
 import nutrisci.template.Styles;
-import nutrisci.view.AveragePlateChartComponent;
 
 public class DietDashboardPanel extends Base {
 
@@ -39,47 +38,15 @@ public class DietDashboardPanel extends Base {
         actionRow.setOpaque(false);
 
         // Meal dropdown label
-        JLabel mealLabel = new JLabel("Selected Meal:");
-        mealLabel.setFont(Styles.default_font);
-        actionRow.add(mealLabel);
+        DatePicker datePicker = new DatePicker();
 
-        // MealType dropdown
-        JComboBox<MealType> mealDropdown = new JComboBox<>(MealType.values());
-        mealDropdown.setFont(Styles.default_font);
-        actionRow.add(mealDropdown);
-
-        // Dropdown listener (ready for future chart filtering)
-        mealDropdown.addActionListener(e -> {
-            MealType selected = (MealType) mealDropdown.getSelectedItem();
-            System.out.println("Selected meal type: " + selected);
-            // TODO: update charts based on meal type
-        });
-
-        // View Meals button
-        JButton viewBtn = new JButton("View Logged Meals");
-        viewBtn.setFont(Styles.default_font);
-        viewBtn.setBackground(Styles.lightorange);
-        viewBtn.setFocusPainted(false);
-        viewBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        viewBtn.addActionListener(e -> {
-            frame.setContentPane(new ViewMealsPanel(frame, profile));
-            frame.revalidate();
-            frame.repaint(); });
-        actionRow.add(viewBtn);
-
-        // Log Meal button
-        JButton logBtn = new JButton("+ Log Meal");
-        logBtn.setFont(Styles.default_font);
-        logBtn.setBackground(new Color(168, 209, 123));
-        logBtn.setFocusPainted(false);
-        logBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        logBtn.addActionListener(e -> {
-            frame.setContentPane(new LogMealPanel(frame, profile));
-            frame.revalidate();
-            frame.repaint();
-        });
-        actionRow.add(logBtn);
-
+        JPanel dateRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 10));
+        dateRow.setOpaque(false);
+        dateRow.add(new JLabel("From:"));
+        dateRow.add(new JTextField(datePicker.getStartDate(), 10));
+        dateRow.add(new JLabel("To:"));
+        dateRow.add(new JTextField(datePicker.getEndDate(), 10));
+        
         // Add the action row below greeting
         top.add(actionRow, BorderLayout.SOUTH);
 
@@ -97,7 +64,6 @@ public class DietDashboardPanel extends Base {
         chartGrid.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         chartGrid.setBackground(Styles.background);
 
-        chartGrid.add(new NutrientIntakeChartComponent(profile));
         chartGrid.add(ChartPanel.createPlaceholder("Swap Effects (Before vs After)"));
         chartGrid.add(ChartPanel.createPlaceholder("Meal Comparison: Original vs Swapped"));
         chartGrid.add(new AveragePlateChartComponent(profile));

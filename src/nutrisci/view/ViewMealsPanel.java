@@ -33,7 +33,7 @@ public class ViewMealsPanel extends Base {
         top.setOpaque(false);
 
         // Back button
-        top.add(createTopPanel(new DietDashboardPanel(frame, profile)), BorderLayout.WEST);
+        top.add(createTopPanel(new UserDashboardPanel(frame, profile)), BorderLayout.WEST);
 
         // Title
         JLabel title = new JLabel("Logged Meals for " + profile.getName());

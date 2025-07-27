@@ -10,6 +10,7 @@ public class DatePicker extends JPanel {
 
     public DatePicker() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        setBackground(getBackground());
         add(new JLabel("From:"));
         add(startField);
         add(new JLabel("To:"));

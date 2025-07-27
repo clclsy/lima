@@ -21,7 +21,7 @@ public class LogMealPanel extends Base {
         this.profile = profile;
 
         setLayout(new BorderLayout());
-        add(createTopPanel(new DietDashboardPanel(frame, profile)), BorderLayout.NORTH);
+        add(createTopPanel(new UserDashboardPanel(frame, profile)), BorderLayout.NORTH);
 
         // Center panel with form card
         JPanel center = new JPanel(new GridBagLayout());
