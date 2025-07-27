@@ -145,9 +145,19 @@ public class ViewMealsPanel extends Base {
 
         LocalDate parsedStart = null;
         LocalDate parsedEnd = null;
+
         try {
-            parsedStart = LocalDate.parse(datePicker.getStartDate());
-            parsedEnd = LocalDate.parse(datePicker.getEndDate());
+            // Get text values from date picker
+            String startText = datePicker.getStartDate();
+            String endText = datePicker.getEndDate();
+
+            // Parse text to LocalDate
+            if (startText != null && !startText.isEmpty()) {
+                parsedStart = LocalDate.parse(startText);
+            }
+            if (endText != null && !endText.isEmpty()) {
+                parsedEnd = LocalDate.parse(endText);
+            }
         } catch (Exception e) {
             System.out.println("Invalid date input. Skipping range filter.");
         }
@@ -160,7 +170,8 @@ public class ViewMealsPanel extends Base {
         List<Meal> filtered = allMeals.stream()
                 .filter(m -> {
                     LocalDate date = m.getDate();
-                    return start == null || end == null || (!date.isBefore(start) && !date.isAfter(end));
+                    return start == null || end == null ||
+                            (!date.isBefore(start) && !date.isAfter(end));
                 })
                 .collect(Collectors.toList());
 
@@ -178,7 +189,6 @@ public class ViewMealsPanel extends Base {
         mealContainer.revalidate();
         mealContainer.repaint();
 
-        // Adjust scroll pane size to fit content
         SwingUtilities.invokeLater(() -> {
             scrollPane.getViewport().setViewSize(
                     new Dimension(
@@ -197,7 +207,8 @@ public class ViewMealsPanel extends Base {
         int vgap = 20;
 
         // Calculate available width based on parent container
-        int availableWidth = getParent() != null ? getParent().getWidth() - 40 : Toolkit.getDefaultToolkit().getScreenSize().width;
+        int availableWidth = getParent() != null ? getParent().getWidth() - 40
+                : Toolkit.getDefaultToolkit().getScreenSize().width;
 
         // Calculate number of cards per row
         int cardsPerRow = Math.max(1, (availableWidth - hgap) / (cardWidth + hgap));
@@ -207,7 +218,6 @@ public class ViewMealsPanel extends Base {
         // Ensure minimum height
         return new Dimension(
                 super.getPreferredSize().width,
-                Math.min(800, totalHeight) 
-        );
+                Math.min(800, totalHeight));
     }
 }

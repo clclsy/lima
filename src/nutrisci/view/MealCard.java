@@ -32,8 +32,20 @@ public class MealCard extends JPanel {
             label.setFont(Styles.default_font);
             listPanel.add(label);
         }
+        
+        double calories = 0.0;
+        try {
+            var nutrients = nutrisci.util.NutrientCalculator.calculateMealNutrients(meal);
+            calories = nutrients.getOrDefault("Calories", 0.0);
+        } catch (Exception ignored) {
+        }
+
+        JLabel kcal = new JLabel("Calories: " + Math.round(calories) + " kcal");
+        kcal.setFont(Styles.default_font);
+        kcal.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
         add(header);
+        add(kcal);
         add(listPanel);
     }
 }

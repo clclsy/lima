@@ -13,8 +13,27 @@ public class MealDAO {
     private static final String DB_USER = DBConnectionHelper.get("DB_USER");
     private static final String DB_PASS = DBConnectionHelper.get("DB_PASSWORD");
 
-    @SuppressWarnings("CallToPrintStackTrace")
     public static void insertMeal(int userId, Meal meal) {
+        // Check if meal type is snack - if not, verify no existing meal of same type
+        // and date
+        if (meal.getType() != MealType.SNACK) {
+            String checkSql = "SELECT id FROM meals WHERE user_id = ? AND meal_date = ? AND meal_type = ?";
+
+            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+                    PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+
+                checkStmt.setInt(1, userId);
+                checkStmt.setDate(2, Date.valueOf(meal.getDate()));
+                checkStmt.setString(3, meal.getType().toString());
+
+                ResultSet rs = checkStmt.executeQuery();
+                if (rs.next()) {
+                    throw new IllegalArgumentException("You can only have one " + meal.getType() + " per day");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
         String sqlMeal = "INSERT INTO meals(user_id, meal_date, meal_type) VALUES (?, ?, ?)";
         String sqlItem = "INSERT INTO meal_items(meal_id, ingredient, quantity) VALUES (?, ?, ?)";
 
@@ -42,6 +61,7 @@ public class MealDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Database error while inserting meal", e);
         }
     }
 
@@ -58,7 +78,7 @@ public class MealDAO {
         List<Meal> meals = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
 

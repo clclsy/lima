@@ -89,7 +89,18 @@ public class LogMealPanel extends Base {
         logButton.setFont(Styles.default_font);
         logButton.setBackground(new Color(168, 209, 123));
         logButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        logButton.addActionListener(e -> logMeal());
+        logButton.addActionListener(e -> {
+            try {
+                logMeal();
+            } catch (IllegalArgumentException iae) {
+                JOptionPane.showMessageDialog(this, iae.getMessage(), "Duplicate Meal", JOptionPane.WARNING_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "An unexpected error occurred:\n" + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         card.add(logButton, gbc);
 
         center.add(card);
@@ -97,44 +108,41 @@ public class LogMealPanel extends Base {
     }
 
     private void logMeal() {
-        try {
-            LocalDate date = LocalDate.parse(dateField.getText().trim());
-            String type = mealTypeDropdown.getSelectedItem().toString();
-            List<String[]> rows = ingredient_input.getInputRows();
+        LocalDate date = LocalDate.parse(dateField.getText().trim());
+        String type = mealTypeDropdown.getSelectedItem().toString();
+        List<String[]> rows = ingredient_input.getInputRows();
 
-            if (rows.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill at least one ingredient.",
-                        "Missing Ingredient", JOptionPane.ERROR_MESSAGE);
+        if (rows.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill at least one ingredient.",
+                    "Missing Ingredient", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        List<MealItem> items = new ArrayList<>();
+        for (String[] row : rows) {
+            try {
+                String name = row[0];
+                double quantity = Double.parseDouble(row[1]);
+                items.add(new MealItem(name, quantity));
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid quantity entered for: " + row[0], "Quantity Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
-            List<MealItem> items = new ArrayList<>();
-            for (String[] row : rows) {
-                try {
-                    String name = row[0];
-                    double quantity = Double.parseDouble(row[1]);
-                    items.add(new MealItem(name, quantity));
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this,
-                            "Invalid quantity entered for: " + row[0], "Quantity Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            Meal meal = new Meal(profile.getId(), date, MealType.valueOf(type.toUpperCase()), items);
-
-            // Save to DB
-            MealDAO.insertMeal(profile.getId(), meal);
-
-            JOptionPane.showMessageDialog(this, "Meal logged successfully.");
-
-            // Switch to User Dashboard
-            DietDashboardPanel diet = new DietDashboardPanel(frame, profile);
-            frame.setContentPane(diet);
-            frame.revalidate();
-            frame.repaint();
-        } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        Meal meal = new Meal(profile.getId(), date, MealType.valueOf(type.toUpperCase()), items);
+
+        // Save to DB
+        MealDAO.insertMeal(profile.getId(), meal);
+
+        JOptionPane.showMessageDialog(this, "Meal logged successfully.");
+
+        // Switch to User Dashboard
+        DietDashboardPanel diet = new DietDashboardPanel(frame, profile);
+        frame.setContentPane(diet);
+        frame.revalidate();
+        frame.repaint();
+
     }
 }

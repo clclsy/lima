@@ -17,7 +17,6 @@ public class ChartPanel {
         titleLabel.setFont(Styles.default_font);
 
         // Placeholder for chart content
-        // Replace with actual chart component
         JLabel placeholder = new JLabel("[ Chart Placeholder ]", JLabel.CENTER);
         placeholder.setFont(Styles.ismall_font);
         placeholder.setForeground(Color.GRAY);

@@ -5,33 +5,27 @@ import java.time.LocalDate;
 import javax.swing.*;
 
 public class DatePicker extends JPanel {
-    private final JTextField startDate;
-    private final JTextField endDate;
+    private final JTextField startField = new JTextField(10);
+    private final JTextField endField = new JTextField(10);
 
     public DatePicker() {
-        setLayout(new FlowLayout(FlowLayout.LEFT));
-        setBackground(Styles.background);
-
-        startDate = new JTextField(LocalDate.now().minusDays(7).toString(), 10);
-        startDate.setFont(Styles.small_font);
-        endDate = new JTextField(LocalDate.now().toString(), 10);
-        endDate.setFont(Styles.small_font);
-        JLabel startLabel = new JLabel("From:");
-        startLabel.setFont(Styles.small_font);
-        JLabel endLabel = new JLabel("To:");
-        endLabel.setFont(Styles.small_font);
-        add(startLabel);
-        add(startDate);
-        add(Box.createHorizontalStrut(10));
-        add(endLabel);
-        add(endDate);
+        setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        add(new JLabel("From:"));
+        add(startField);
+        add(new JLabel("To:"));
+        add(endField);
+        
+        // Set default values (current week)
+        LocalDate today = LocalDate.now();
+        startField.setText(today.minusDays(7).toString());
+        endField.setText(today.toString());
     }
 
     public String getStartDate() {
-        return startDate.getText();
+        return startField.getText();
     }
 
     public String getEndDate() {
-        return endDate.getText();
+        return endField.getText();
     }
 }

@@ -2,7 +2,7 @@ package nutrisci.model;
 
 public class MealItem {
     private String ingredient;
-    private double quantity; // in grams
+    private double quantity;
 
     public MealItem(String ingredient, double quantity) {
         this.ingredient = ingredient;
