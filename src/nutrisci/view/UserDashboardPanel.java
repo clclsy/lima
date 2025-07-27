@@ -6,6 +6,9 @@ import nutrisci.db.UserProfileDAO;
 import nutrisci.model.UserProfile;
 import nutrisci.template.Base;
 import nutrisci.template.Styles;
+import nutrisci.view.ApplySwapPanel;
+import java.awt.image.BufferedImage;
+import java.awt.RenderingHints;
 
 public class UserDashboardPanel extends Base {
 
@@ -64,6 +67,9 @@ public class UserDashboardPanel extends Base {
         JButton logmealBtn = createSquareButton("Log Meal", logIcon, new Color(250, 220, 220));
         JButton viewmealBtn = createSquareButton("View Meals", vmIcon, new Color(220, 255, 220));
         JButton visualizeBtn = createSquareButton("Visualize Swaps", viz_chartIcon, new Color(220, 220, 255)); //// need viz.chart icon
+        Image swap_image = createSwapIcon();
+        ImageIcon swapIcon = new ImageIcon(swap_image);
+        JButton applySwapBtn = createSquareButton("Apply Swap", swapIcon, new Color(220, 255, 255));
 
 
         // Button Actions
@@ -121,12 +127,19 @@ public class UserDashboardPanel extends Base {
         frame.repaint(); ////
         });
 
+        applySwapBtn.addActionListener(e -> {
+            frame.setContentPane(new ApplySwapPanel(frame, profile));
+            frame.revalidate();
+            frame.repaint();
+        });
+
         buttonPanel.add(editBtn);
         buttonPanel.add(logmealBtn);
         buttonPanel.add(dietBtn);
         buttonPanel.add(nutrigoalBtn);
         buttonPanel.add(viewmealBtn);
         buttonPanel.add(visualizeBtn);
+        buttonPanel.add(applySwapBtn);
         buttonPanel.add(deleteBtn); 
 
         add(buttonPanel, BorderLayout.CENTER);
@@ -143,5 +156,21 @@ public class UserDashboardPanel extends Base {
         btn.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
+    }
+
+    private Image createSwapIcon() {
+        int s = 32;
+        BufferedImage img = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = img.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(new Color(52, 73, 94));
+        int[] x1 = {6, 22, 22, 28, 22, 22};
+        int[] y1 = {10, 10, 4, 16, 28, 22};
+        g.fillPolygon(x1, y1, x1.length);
+        int[] x2 = {26, 10, 10, 4, 10, 10};
+        int[] y2 = {22, 22, 28, 16, 4, 10};
+        g.fillPolygon(x2, y2, x2.length);
+        g.dispose();
+        return img;
     }
 }

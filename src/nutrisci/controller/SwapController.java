@@ -3,6 +3,7 @@ package nutrisci.controller;
 import java.util.*;
 import nutrisci.db.MealDAO;
 import nutrisci.model.*;
+import java.time.LocalDate;
 
 public class SwapController {
     private final SmartSwapEngine swapEngine;
@@ -22,5 +23,9 @@ public class SwapController {
             allSuggestions.addAll(swapEngine.suggestSwapsForMeal(meal, goals));
         }
         return allSuggestions;
+    }
+
+    public int applySwapAcrossMeals(int userId, String original, String replacement, LocalDate startDate, LocalDate endDate) {
+        return MealDAO.applyIngredientSwap(userId, original, replacement, startDate, endDate);
     }
 }

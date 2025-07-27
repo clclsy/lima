@@ -150,4 +150,43 @@ public class MealDAO {
         return result;
     }
 
+    public static int applyIngredientSwap(int userId, String original, String replacement, java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE meal_items mi JOIN meals m ON mi.meal_id = m.id SET mi.ingredient = ? WHERE m.user_id = ? AND LOWER(mi.ingredient) = LOWER(?)");
+        boolean useDates = startDate != null && endDate != null;
+        if (useDates) {
+            sql.append(" AND m.meal_date BETWEEN ? AND ?");
+        }
+        try (java.sql.Connection conn = java.sql.DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            stmt.setString(idx++, replacement);
+            stmt.setInt(idx++, userId);
+            stmt.setString(idx++, original);
+            if (useDates) {
+                stmt.setDate(idx++, java.sql.Date.valueOf(startDate));
+                stmt.setDate(idx++, java.sql.Date.valueOf(endDate));
+            }
+            return stmt.executeUpdate();
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static java.util.List<String> getDistinctIngredientsByUserId(int userId) {
+        java.util.List<String> list = new java.util.ArrayList<>();
+        String sql = "SELECT DISTINCT mi.ingredient FROM meal_items mi JOIN meals m ON mi.meal_id = m.id WHERE m.user_id = ? ORDER BY mi.ingredient";
+        try (java.sql.Connection conn = java.sql.DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            java.sql.ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getString(1));
+            }
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
