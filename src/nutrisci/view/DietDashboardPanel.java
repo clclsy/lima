@@ -7,6 +7,7 @@ import nutrisci.model.UserProfile;
 import nutrisci.template.Base;
 import nutrisci.template.ChartPanel;
 import nutrisci.template.Styles;
+import nutrisci.view.AveragePlateChartComponent;
 
 public class DietDashboardPanel extends Base {
 
@@ -96,11 +97,10 @@ public class DietDashboardPanel extends Base {
         chartGrid.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         chartGrid.setBackground(Styles.background);
 
-        chartGrid.add(ChartPanel.createPlaceholder("Daily Calories per Meal"));
         chartGrid.add(new NutrientIntakeChartComponent(profile));
         chartGrid.add(ChartPanel.createPlaceholder("Swap Effects (Before vs After)"));
         chartGrid.add(ChartPanel.createPlaceholder("Meal Comparison: Original vs Swapped"));
-        chartGrid.add(ChartPanel.createPlaceholder("Canada Food Guide Alignment"));
+        chartGrid.add(new AveragePlateChartComponent(profile));
 
         contentPanel.add(Box.createVerticalStrut(10));
         contentPanel.add(chartGrid);
