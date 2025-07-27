@@ -152,7 +152,7 @@ public class VisualizeSwapPanel extends Base {
 
     private void renderLineChart() {
         try {
-            LocalDate startDate = LocalDate.parse(lineStartPicker.getEndDate());
+            LocalDate startDate = LocalDate.parse(lineStartPicker.getStartDate());
             LocalDate endDate = LocalDate.parse(lineEndPicker.getEndDate());
             String nutrient = (String) lineNutrientCombo.getSelectedItem();
 
