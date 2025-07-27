@@ -1,4 +1,4 @@
-package nutrisci.view;
+package nutrisci.view; 
 
 import nutrisci.charts.SwapEffectChart;
 import nutrisci.controller.VisualizationController;
@@ -145,6 +145,31 @@ public class VisualizeSwapPanel extends Base {
             barChartContainer.add(chartPanel, BorderLayout.CENTER);
             barChartContainer.revalidate();
             barChartContainer.repaint();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error generating chart: " + ex.getMessage());
+        }
+    }
+
+    private void renderLineChart() {
+        try {
+            LocalDate startDate = lineStartPicker.getDate();
+            LocalDate endDate = lineEndPicker.getDate();
+            String nutrient = (String) lineNutrientCombo.getSelectedItem();
+
+        // This check is important since "All" is not an option for the line chart
+            if (nutrient == null || nutrient.equalsIgnoreCase("All")) {
+                JOptionPane.showMessageDialog(this, "Please select a specific nutrient for the trend chart.");
+                return;
+            }
+
+            Map<String, Double> trendData = controller.getTrendData(profile.getId(), nutrient, startDate, endDate);
+
+            JPanel chartPanel = SwapEffectChart.generateLineChart(trendData, nutrient);
+
+            lineChartContainer.removeAll();
+            lineChartContainer.add(chartPanel, BorderLayout.CENTER);
+            lineChartContainer.revalidate();
+            lineChartContainer.repaint();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error generating chart: " + ex.getMessage());
         }

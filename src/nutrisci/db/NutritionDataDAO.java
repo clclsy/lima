@@ -173,22 +173,4 @@ public class NutritionDataDAO {
             default -> nutrientName;
         };
     }
-
-    public static String normalizeNutrientName(String name) {
-        if (name == null)
-            return "";
-        return switch (name.trim().toUpperCase()) {
-            case "CALORIES", "KCAL", "ENERGY", "ENERGY (KILOCALORIES)" -> "Energy";
-            case "CARBS", "CARBOHYDRATES", "CARBOHYDRATE, TOTAL", "CARBOHYDRATE, TOTAL (BY DIFFERENCE)" ->
-                "Carbohydrate, total (by difference)";
-            case "FAT", "FATS", "FAT (TOTAL)", "FAT (TOTAL LIPIDS)" -> "Fat (total lipids)";
-            case "FIBER", "FIBRE", "FIBRE, TOTAL DIETARY" -> "Fibre, total dietary";
-            case "PROTEIN" -> "Protein";
-            case "IRON" -> "Iron";
-            case "CALCIUM" -> "Calcium";
-            case "VITAMIN C" -> "Vitamin C";
-            default -> name;
-        };
-    }
-
-}
+} 

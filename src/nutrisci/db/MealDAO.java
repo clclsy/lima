@@ -1,5 +1,5 @@
 package nutrisci.db;
-
+ 
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -120,7 +120,7 @@ public class MealDAO {
                     SELECT m.meal_date, n.name_en AS nutrient, SUM(nd.nutrient_value) AS total
                     FROM meals m
                     JOIN meal_items mi ON m.id = mi.meal_id
-                    JOIN foods f ON LOWER(f.name_en) = LOWER(mi.ingredient)
+                    JOIN FoodDescriptions f ON LOWER(f.name_en) = LOWER(mi.ingredient)
                     JOIN nutrientdata nd ON nd.food_id = f.food_id
                     JOIN nutrients n ON nd.nutrient_id = n.nutrient_id
                     WHERE m.user_id = ?
